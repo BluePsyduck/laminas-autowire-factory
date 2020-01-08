@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/8.0/phpunit.xsd"
+    forceCoversAnnotation="true"
+>
+    <testsuites>
+        <testsuite name="unit-test">
+            <directory>test/src</directory>
+        </testsuite>
+        <testsuite name="integration-test">
+            <directory>test/integration</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">src</directory>
+        </whitelist>
+    </filter>
+</phpunit>

@@ -1,0 +1,15 @@
+parameters:
+  level: max
+  paths:
+    - src
+    - test/integration
+    - test/src
+
+  ignoreErrors:
+    - '#Dynamic call to static method PHPUnit\\Framework\\.*#'
+    - '#Return type \(mixed\) of method BluePsyduck\\LaminasAutoWireFactory\\ConfigReaderFactory::__invoke\(\) should be covariant with return type \(object\) of method Laminas\\ServiceManager\\Factory\\FactoryInterface::__invoke\(\)#'
+
+includes:
+  - vendor/phpstan/phpstan-phpunit/extension.neon
+  - vendor/phpstan/phpstan-phpunit/rules.neon
+  - vendor/phpstan/phpstan-strict-rules/rules.neon

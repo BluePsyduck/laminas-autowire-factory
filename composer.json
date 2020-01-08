@@ -1,0 +1,60 @@
+{
+    "name": "bluepsyduck/laminas-autowire-factory",
+    "description": "A Laminas factory implementation allowing for auto-wiring like in Symfony.",
+    "homepage": "https://github.com/BluePsyduck/laminas-autowire-factory",
+    "type": "library",
+    "keywords": ["BluePsyduck", "Laminas", "auto-wire", "factory"],
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "BluePsyduck",
+            "email": "bluepsyduck@gmx.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "laminas/laminas-servicemanager": "^3.0"
+    },
+    "require-dev": {
+        "bluepsyduck/test-helper": "^1.0",
+        "laminas/laminas-config-aggregator": "^1.1",
+        "mikey179/vfsstream": "^1.6",
+        "phpstan/phpstan": "^0.12",
+        "phpstan/phpstan-phpunit": "^0.12",
+        "phpstan/phpstan-strict-rules": "^0.12",
+        "phpunit/phpunit": "^7.0 || ^8.0",
+        "rregeer/phpunit-coverage-check": "^0.1",
+        "squizlabs/php_codesniffer": "^3.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "BluePsyduck\\LaminasAutoWireFactory\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BluePsyduckIntegrationTest\\LaminasAutoWireFactory\\": "test/integration/",
+            "BluePsyduckTest\\LaminasAutoWireFactory\\": "test/src/",
+            "BluePsyduckTestAsset\\LaminasAutoWireFactory\\": "test/asset/"
+        }
+    },
+    "scripts": {
+        "coverage-check": "coverage-check test/coverage/clover.xml 100",
+        "phpcbf": "phpcbf -p --colors",
+        "phpcs": "phpcs -p --colors",
+        "phpstan": "phpstan analyse --no-interaction --ansi",
+        "test-unit": "phpunit --testsuite unit-test --colors=always --coverage-html=test/coverage --coverage-clover=test/coverage/clover.xml",
+        "test-integration": "phpunit --testsuite integration-test --colors=always",
+        "test": [
+            "@test-unit",
+            "@test-integration",
+            "@coverage-check",
+            "@phpcs",
+            "@phpstan"
+        ]
+    }
+}

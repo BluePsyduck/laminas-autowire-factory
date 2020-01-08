@@ -1,0 +1,27 @@
+language: php
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 7.1
+    - php: 7.2
+    - php: 7.3
+    - php: 7.4
+
+cache:
+  directories:
+    - $HOME/.composer/cache/files
+
+install:
+  - composer install --prefer-dist --no-interaction --no-suggest
+
+script:
+  - vendor/bin/phpunit --testsuite=unit-test --coverage-clover=coverage.xml
+  - vendor/bin/phpunit --testsuite=integration-test
+  - vendor/bin/coverage-check coverage.xml 100
+  - vendor/bin/phpcs -np --colors
+  - vendor/bin/phpstan analyse --no-interaction
+
+after_script:
+  - bash <(curl -s https://codecov.io/bash)
+
