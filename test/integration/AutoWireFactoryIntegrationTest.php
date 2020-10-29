@@ -74,7 +74,7 @@ class AutoWireFactoryIntegrationTest extends TestCase
 
         $this->assertInstanceOf($className, $instance);
     }
-    
+
     /**
      * Creates the container for the test.
      * @return ContainerInterface

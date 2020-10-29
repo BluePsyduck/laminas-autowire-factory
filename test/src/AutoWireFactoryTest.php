@@ -91,7 +91,7 @@ class AutoWireFactoryTest extends TestCase
             $this->extractProperty($factory, 'parameterAliasResolver')
         );
     }
-    
+
     /**
      * Tests the invoking.
      * @throws ReflectionException
@@ -117,7 +117,7 @@ class AutoWireFactoryTest extends TestCase
                                      ->method('getParameterAliasesForConstructor')
                                      ->with($this->identicalTo($requestedName))
                                      ->willReturn($parameterAliases);
-        
+
         /* @var AutoWireFactory&MockObject $factory */
         $factory = $this->getMockBuilder(AutoWireFactory::class)
                         ->setMethods(['createParameterInstances', 'createInstance'])
@@ -185,7 +185,7 @@ class AutoWireFactoryTest extends TestCase
             'def' => ['ghi', 'jkl'],
             'mno' => ['pqr', 'stu'],
         ];
-        
+
         /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
         /* @var stdClass&MockObject $instance1 */
@@ -194,7 +194,7 @@ class AutoWireFactoryTest extends TestCase
         $instance2 = $this->createMock(stdClass::class);
 
         $expectedResult = [$instance1, $instance2];
-        
+
         /* @var AutoWireFactory&MockObject $factory */
         $factory = $this->getMockBuilder(AutoWireFactory::class)
                         ->setMethods(['createInstanceOfFirstAvailableAlias'])
