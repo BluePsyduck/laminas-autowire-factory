@@ -1,9 +1,9 @@
 # Laminas Auto-Wire Factory
 
-[![Latest Stable Version](https://poser.pugx.org/bluepsyduck/laminas-autowire-factory/v/stable)](https://packagist.org/packages/bluepsyduck/laminas-autowire-factory) 
-[![License](https://poser.pugx.org/bluepsyduck/laminas-autowire-factory/license)](https://packagist.org/packages/bluepsyduck/laminas-autowire-factory) 
-[![Build Status](https://travis-ci.com/BluePsyduck/laminas-autowire-factory.svg?branch=master)](https://travis-ci.com/BluePsyduck/laminas-autowire-factory) 
-[![codecov](https://codecov.io/gh/bluepsyduck/laminas-autowire-factory/branch/master/graph/badge.svg)](https://codecov.io/gh/bluepsyduck/laminas-autowire-factory)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/BluePsyduck/laminas-autowire-factory)](https://github.com/BluePsyduck/laminas-autowire-factory/releases)
+[![GitHub](https://img.shields.io/github/license/BluePsyduck/laminas-autowire-factory)](LICENSE.md)
+[![build](https://img.shields.io/github/workflow/status/BluePsyduck/laminas-autowire-factory/CI?logo=github)](https://github.com/BluePsyduck/laminas-autowire-factory/actions)
+[![Codecov](https://img.shields.io/codecov/c/gh/BluePsyduck/laminas-autowire-factory?logo=codecov)](https://codecov.io/gh/BluePsyduck/laminas-autowire-factory)
 
 This library provides few factories helping with auto-wiring service classes to make writing actual factories less
 common. 
