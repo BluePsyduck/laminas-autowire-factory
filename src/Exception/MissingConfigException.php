@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BluePsyduck\LaminasAutoWireFactory\Exception;
 
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Throwable;
 
 /**
@@ -12,7 +13,7 @@ use Throwable;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class MissingConfigException extends AutoWireException
+class MissingConfigException extends ServiceNotCreatedException
 {
     private const MESSAGE = 'Failed to read config: %s';
 
