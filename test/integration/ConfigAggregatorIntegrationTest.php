@@ -8,10 +8,10 @@ use BluePsyduck\LaminasAutoWireFactory\AutoWireFactory;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithoutConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithParameterlessConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithScalarTypeHintConstructor;
-use PHPUnit\Framework\TestCase;
 use Laminas\ConfigAggregator\ConfigAggregator;
 use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\ServiceManager;
+use PHPUnit\Framework\TestCase;
 
 use function BluePsyduck\LaminasAutoWireFactory\injectAliasArray;
 use function BluePsyduck\LaminasAutoWireFactory\readConfig;

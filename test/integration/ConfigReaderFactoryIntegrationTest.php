@@ -6,8 +6,8 @@ namespace BluePsyduckIntegrationTest\LaminasAutoWireFactory;
 
 use BluePsyduck\LaminasAutoWireFactory\Exception\MissingConfigException;
 use Interop\Container\ContainerInterface;
-use PHPUnit\Framework\TestCase;
 use Laminas\ServiceManager\ServiceManager;
+use PHPUnit\Framework\TestCase;
 
 use function BluePsyduck\LaminasAutoWireFactory\readConfig;
 

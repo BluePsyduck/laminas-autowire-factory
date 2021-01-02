@@ -8,9 +8,9 @@ use BluePsyduck\LaminasAutoWireFactory\Exception\MissingConfigException;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithoutConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithParameterlessConstructor;
 use Interop\Container\ContainerInterface;
-use PHPUnit\Framework\TestCase;
 use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\ServiceManager;
+use PHPUnit\Framework\TestCase;
 
 use function BluePsyduck\LaminasAutoWireFactory\injectAliasArray;
 
