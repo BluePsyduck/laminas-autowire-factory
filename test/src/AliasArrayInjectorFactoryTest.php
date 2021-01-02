@@ -8,7 +8,6 @@ use BluePsyduck\LaminasAutoWireFactory\AliasArrayInjectorFactory;
 use BluePsyduck\LaminasAutoWireFactory\ConfigReaderFactory;
 use BluePsyduck\TestHelper\ReflectionTrait;
 use Interop\Container\ContainerInterface;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 use stdClass;
@@ -25,7 +24,6 @@ class AliasArrayInjectorFactoryTest extends TestCase
     use ReflectionTrait;
 
     /**
-     * Tests the __set_state method.
      * @covers ::__set_state
      */
     public function testSetState(): void
@@ -40,7 +38,6 @@ class AliasArrayInjectorFactoryTest extends TestCase
     }
 
     /**
-     * Tests the __set_state method.
      * @covers ::__set_state
      */
     public function testSetStateWithoutArray(): void
@@ -52,7 +49,6 @@ class AliasArrayInjectorFactoryTest extends TestCase
     }
 
     /**
-     * Tests the constructing.
      * @throws ReflectionException
      * @covers ::__construct
      */
@@ -66,8 +62,6 @@ class AliasArrayInjectorFactoryTest extends TestCase
     }
 
     /**
-     * Tests the invoking.
-     * @throws ReflectionException
      * @covers ::__invoke
      */
     public function testInvoke(): void
@@ -80,9 +74,7 @@ class AliasArrayInjectorFactoryTest extends TestCase
             'vwx' => 'yza',
         ];
 
-        /* @var stdClass&MockObject $instance1 */
         $instance1 = $this->createMock(stdClass::class);
-        /* @var stdClass&MockObject $instance2 */
         $instance2 = $this->createMock(stdClass::class);
 
         $expectedResult = [
@@ -90,7 +82,6 @@ class AliasArrayInjectorFactoryTest extends TestCase
             'vwx' => $instance2,
         ];
 
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->exactly(2))
                   ->method('get')
@@ -104,7 +95,6 @@ class AliasArrayInjectorFactoryTest extends TestCase
                   );
 
 
-        /* @var ConfigReaderFactory&MockObject $configReaderFactory */
         $configReaderFactory = $this->createMock(ConfigReaderFactory::class);
         $configReaderFactory->expects($this->once())
                             ->method('__invoke')
@@ -115,9 +105,8 @@ class AliasArrayInjectorFactoryTest extends TestCase
                             )
                             ->willReturn($aliases);
 
-        /* @var AliasArrayInjectorFactory&MockObject $factory */
         $factory = $this->getMockBuilder(AliasArrayInjectorFactory::class)
-                        ->setMethods(['createConfigReaderFactory'])
+                        ->onlyMethods(['createConfigReaderFactory'])
                         ->setConstructorArgs($configKeys)
                         ->getMock();
         $factory->expects($this->once())
@@ -131,8 +120,6 @@ class AliasArrayInjectorFactoryTest extends TestCase
     }
 
     /**
-     * Tests the invoking.
-     * @throws ReflectionException
      * @covers ::__invoke
      */
     public function testInvokeWithSingleAlias(): void
@@ -142,19 +129,16 @@ class AliasArrayInjectorFactoryTest extends TestCase
         $options = ['jkl', 'mno'];
         $aliases = 'stu';
 
-        /* @var stdClass&MockObject $instance */
         $instance = $this->createMock(stdClass::class);
 
         $expectedResult = [$instance];
 
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->once())
                   ->method('get')
                   ->with($this->identicalTo('stu'))
                   ->willReturn($instance);
 
-        /* @var ConfigReaderFactory&MockObject $configReaderFactory */
         $configReaderFactory = $this->createMock(ConfigReaderFactory::class);
         $configReaderFactory->expects($this->once())
                             ->method('__invoke')
@@ -165,9 +149,8 @@ class AliasArrayInjectorFactoryTest extends TestCase
                             )
                             ->willReturn($aliases);
 
-        /* @var AliasArrayInjectorFactory&MockObject $factory */
         $factory = $this->getMockBuilder(AliasArrayInjectorFactory::class)
-                        ->setMethods(['createConfigReaderFactory'])
+                        ->onlyMethods(['createConfigReaderFactory'])
                         ->setConstructorArgs($configKeys)
                         ->getMock();
         $factory->expects($this->once())
@@ -181,7 +164,6 @@ class AliasArrayInjectorFactoryTest extends TestCase
     }
 
     /**
-     * Tests the createConfigReaderFactory method.
      * @throws ReflectionException
      * @covers ::createConfigReaderFactory
      */

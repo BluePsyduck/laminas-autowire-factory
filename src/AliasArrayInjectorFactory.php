@@ -16,12 +16,11 @@ class AliasArrayInjectorFactory
 {
     /**
      * The config keys.
-     * @var array|string[]
+     * @var array<string>
      */
-    protected $configKeys;
+    protected array $configKeys;
 
     /**
-     * Sets the state of the factory on deserialization.
      * @param array<mixed> $array
      * @return self
      */
@@ -61,7 +60,7 @@ class AliasArrayInjectorFactory
 
     /**
      * Creates the factory to read the aliases from the config.
-     * @param array|string[] $configKeys
+     * @param array<string> $configKeys
      * @return ConfigReaderFactory
      */
     protected function createConfigReaderFactory(array $configKeys): ConfigReaderFactory

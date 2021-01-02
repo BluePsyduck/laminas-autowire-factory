@@ -20,11 +20,7 @@ use ReflectionException;
  */
 class AutoWireFactory implements FactoryInterface, AbstractFactoryInterface
 {
-    /**
-     * The parameter alias resolver.
-     * @var ParameterAliasResolver
-     */
-    protected $parameterAliasResolver;
+    protected ParameterAliasResolver $parameterAliasResolver;
 
     /**
      * Sets the cache file to use.
@@ -35,23 +31,19 @@ class AutoWireFactory implements FactoryInterface, AbstractFactoryInterface
         ParameterAliasResolver::setCacheFile($cacheFile);
     }
 
-    /**
-     * Initializes the factory.
-     */
     public function __construct()
     {
         $this->parameterAliasResolver = new ParameterAliasResolver();
     }
 
     /**
-     * Creates the service.
      * @param ContainerInterface $container
      * @param string $requestedName
      * @param array<mixed>|null $options
      * @return object
      * @throws AutoWireException
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): object
     {
         try {
             $parameterAliases = $this->parameterAliasResolver->getParameterAliasesForConstructor($requestedName);
@@ -67,8 +59,8 @@ class AutoWireFactory implements FactoryInterface, AbstractFactoryInterface
      * Creates the instances for the parameter aliases.
      * @param ContainerInterface $container
      * @param string $className
-     * @param array|string[][] $parameterAliases
-     * @return array|object[]
+     * @param array<string, array<string>> $parameterAliases
+     * @return array<object>
      * @throws AutoWireException
      */
     protected function createParameterInstances(
@@ -88,7 +80,7 @@ class AutoWireFactory implements FactoryInterface, AbstractFactoryInterface
      * @param ContainerInterface $container
      * @param string $className
      * @param string $parameterName
-     * @param array|string[] $aliases
+     * @param array<string> $aliases
      * @return mixed
      * @throws AutoWireException
      */
@@ -111,9 +103,9 @@ class AutoWireFactory implements FactoryInterface, AbstractFactoryInterface
      * Creates the actual instance.
      * @param string $className
      * @param array<mixed> $parameters
-     * @return mixed
+     * @return object
      */
-    protected function createInstance(string $className, array $parameters)
+    protected function createInstance(string $className, array $parameters): object
     {
         return new $className(...$parameters);
     }
@@ -124,7 +116,7 @@ class AutoWireFactory implements FactoryInterface, AbstractFactoryInterface
      * @param string $requestedName
      * @return bool
      */
-    public function canCreate(ContainerInterface $container, $requestedName)
+    public function canCreate(ContainerInterface $container, $requestedName): bool
     {
         $result = false;
         if (class_exists($requestedName)) {
@@ -141,7 +133,7 @@ class AutoWireFactory implements FactoryInterface, AbstractFactoryInterface
     /**
      * Returns whether the parameter aliases can be auto wired.
      * @param ContainerInterface $container
-     * @param array|string[][] $parameterAliases
+     * @param array<string, array<string>> $parameterAliases
      * @return bool
      */
     protected function canAutoWire(ContainerInterface $container, array $parameterAliases): bool
@@ -157,7 +149,7 @@ class AutoWireFactory implements FactoryInterface, AbstractFactoryInterface
     /**
      * Returns whether the container has any of the aliases.
      * @param ContainerInterface $container
-     * @param array|string[] $aliases
+     * @param array<string> $aliases
      * @return bool
      */
     protected function hasAnyAlias(ContainerInterface $container, array $aliases): bool

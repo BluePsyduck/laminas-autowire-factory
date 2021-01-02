@@ -8,7 +8,6 @@ use BluePsyduck\LaminasAutoWireFactory\ConfigReaderFactory;
 use BluePsyduck\LaminasAutoWireFactory\Exception\MissingConfigException;
 use BluePsyduck\TestHelper\ReflectionTrait;
 use Interop\Container\ContainerInterface;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 
@@ -24,7 +23,6 @@ class ConfigReaderFactoryTest extends TestCase
     use ReflectionTrait;
 
     /**
-     * Tests the setConfigAlias method.
      * @throws ReflectionException
      * @covers ::setConfigAlias
      * @runInSeparateProcess
@@ -40,7 +38,6 @@ class ConfigReaderFactoryTest extends TestCase
     }
 
     /**
-     * Tests the __set_state method.
      * @covers ::__set_state
      */
     public function testSetState(): void
@@ -55,7 +52,6 @@ class ConfigReaderFactoryTest extends TestCase
     }
 
     /**
-     * Tests the __set_state method.
      * @covers ::__set_state
      */
     public function testSetStateWithoutArray(): void
@@ -67,7 +63,6 @@ class ConfigReaderFactoryTest extends TestCase
     }
 
     /**
-     * Tests the constructing.
      * @throws ReflectionException
      * @covers ::__construct
      */
@@ -80,7 +75,6 @@ class ConfigReaderFactoryTest extends TestCase
     }
 
     /**
-     * Tests the invoking.
      * @covers ::__invoke
      */
     public function testInvoke(): void
@@ -97,7 +91,6 @@ class ConfigReaderFactoryTest extends TestCase
 
         ConfigReaderFactory::setConfigAlias($configAlias);
 
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->once())
                   ->method('get')
@@ -111,7 +104,6 @@ class ConfigReaderFactoryTest extends TestCase
     }
 
     /**
-     * Tests the invoking.
      * @covers ::__invoke
      */
     public function testInvokeWithMissingKey(): void
@@ -123,7 +115,6 @@ class ConfigReaderFactoryTest extends TestCase
         ];
         $keys = ['ghi', 'jkl'];
 
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->once())
                   ->method('get')
@@ -137,7 +128,6 @@ class ConfigReaderFactoryTest extends TestCase
     }
 
     /**
-     * Tests the invoking.
      * @covers ::__invoke
      */
     public function testInvokeWithNonArrayValue(): void
@@ -151,7 +141,6 @@ class ConfigReaderFactoryTest extends TestCase
         ];
         $keys = ['ghi', 'jkl', 'foo'];
 
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->once())
                   ->method('get')
