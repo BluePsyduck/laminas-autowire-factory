@@ -30,25 +30,15 @@ class AutoWireFactoryTest extends TestCase
 {
     use ReflectionTrait;
 
-    /**
-     * The mocked parameter alias resolver.
-     * @var ParameterAliasResolver&MockObject
-     */
-    protected $parameterAliasResolver;
+    /** @var ParameterAliasResolver&MockObject */
+    protected ParameterAliasResolver $parameterAliasResolver;
 
-    /**
-     * Sets up the test case.
-     * @throws ReflectionException
-     */
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->parameterAliasResolver = $this->createMock(ParameterAliasResolver::class);
     }
 
     /**
-     * Tests the setCacheFile method.
      * @throws ReflectionException
      * @runInSeparateProcess // Unable to backup state of ParameterAliasResolver with @backupStaticAttributes
      * @covers ::setCacheFile
@@ -73,12 +63,11 @@ class AutoWireFactoryTest extends TestCase
 
         $this->assertEquals(
             $parameterAliasesCache,
-            $this->extractProperty(ParameterAliasResolver::class, 'parameterAliasesCache')
+            $this->extractStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache')
         );
     }
 
     /**
-     * Tests the constructing.
      * @throws ReflectionException
      * @covers ::__construct
      */
@@ -93,7 +82,6 @@ class AutoWireFactoryTest extends TestCase
     }
 
     /**
-     * Tests the invoking.
      * @throws ReflectionException
      * @covers ::__invoke
      */
@@ -108,9 +96,7 @@ class AutoWireFactoryTest extends TestCase
             $this->createMock(stdClass::class),
         ];
 
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
-        /* @var stdClass&MockObject $instance */
         $instance = $this->createMock(stdClass::class);
 
         $this->parameterAliasResolver->expects($this->once())
@@ -118,9 +104,8 @@ class AutoWireFactoryTest extends TestCase
                                      ->with($this->identicalTo($requestedName))
                                      ->willReturn($parameterAliases);
 
-        /* @var AutoWireFactory&MockObject $factory */
         $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->setMethods(['createParameterInstances', 'createInstance'])
+                        ->onlyMethods(['createParameterInstances', 'createInstance'])
                         ->getMock();
         $factory->expects($this->once())
                 ->method('createParameterInstances')
@@ -142,7 +127,6 @@ class AutoWireFactoryTest extends TestCase
     }
 
     /**
-     * Tests the invoking.
      * @throws ReflectionException
      * @covers ::__invoke
      */
@@ -150,7 +134,6 @@ class AutoWireFactoryTest extends TestCase
     {
         $requestedName = 'abc';
 
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
 
         $this->parameterAliasResolver->expects($this->once())
@@ -160,9 +143,8 @@ class AutoWireFactoryTest extends TestCase
 
         $this->expectException(FailedReflectionException::class);
 
-        /* @var AutoWireFactory&MockObject $factory */
         $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->setMethods(['createParameterInstances', 'createInstance'])
+                        ->onlyMethods(['createParameterInstances', 'createInstance'])
                         ->getMock();
         $factory->expects($this->never())
                 ->method('createParameterInstances');
@@ -174,7 +156,6 @@ class AutoWireFactoryTest extends TestCase
     }
 
     /**
-     * Tests the createParameterInstances method.
      * @throws ReflectionException
      * @covers ::createParameterInstances
      */
@@ -186,18 +167,14 @@ class AutoWireFactoryTest extends TestCase
             'mno' => ['pqr', 'stu'],
         ];
 
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
-        /* @var stdClass&MockObject $instance1 */
         $instance1 = $this->createMock(stdClass::class);
-        /* @var stdClass&MockObject $instance2 */
         $instance2 = $this->createMock(stdClass::class);
 
         $expectedResult = [$instance1, $instance2];
 
-        /* @var AutoWireFactory&MockObject $factory */
         $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->setMethods(['createInstanceOfFirstAvailableAlias'])
+                        ->onlyMethods(['createInstanceOfFirstAvailableAlias'])
                         ->getMock();
         $factory->expects($this->exactly(2))
                 ->method('createInstanceOfFirstAvailableAlias')
@@ -226,7 +203,6 @@ class AutoWireFactoryTest extends TestCase
     }
 
     /**
-     * Tests the createInstanceOfFirstAvailableAlias method.
      * @throws ReflectionException
      * @covers ::createInstanceOfFirstAvailableAlias
      */
@@ -236,10 +212,8 @@ class AutoWireFactoryTest extends TestCase
         $parameterName = 'def';
         $aliases = ['ghi', 'jkl', 'mno'];
 
-        /* @var stdClass&MockObject $instance */
         $instance = $this->createMock(stdClass::class);
 
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->exactly(2))
                   ->method('has')
@@ -270,7 +244,6 @@ class AutoWireFactoryTest extends TestCase
     }
 
     /**
-     * Tests the createInstanceOfFirstAvailableAlias method.
      * @throws ReflectionException
      * @covers ::createInstanceOfFirstAvailableAlias
      */
@@ -280,10 +253,8 @@ class AutoWireFactoryTest extends TestCase
         $parameterName = 'def';
         $aliases = ['ghi'];
 
-        /* @var stdClass&MockObject $instance */
         $instance = $this->createMock(stdClass::class);
 
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->once())
                   ->method('has')
@@ -308,15 +279,12 @@ class AutoWireFactoryTest extends TestCase
     }
 
     /**
-     * Tests the createInstance method.
      * @throws ReflectionException
      * @covers ::createInstance
      */
     public function testCreateInstance(): void
     {
-        /* @var ClassWithoutConstructor&MockObject $foo */
         $foo = $this->createMock(ClassWithoutConstructor::class);
-        /* @var ClassWithParameterlessConstructor&MockObject $bar */
         $bar = $this->createMock(ClassWithParameterlessConstructor::class);
 
         $className = ClassWithClassTypeHintConstructor::class;
@@ -330,7 +298,6 @@ class AutoWireFactoryTest extends TestCase
     }
 
     /**
-     * Tests the canCreate method.
      * @throws ReflectionException
      * @covers ::canCreate
      */
@@ -340,8 +307,6 @@ class AutoWireFactoryTest extends TestCase
         $parameterAliases = [
             'abc' => ['def', 'ghi'],
         ];
-
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
 
         $this->parameterAliasResolver->expects($this->once())
@@ -349,9 +314,8 @@ class AutoWireFactoryTest extends TestCase
                                      ->with($this->identicalTo($requestedName))
                                      ->willReturn($parameterAliases);
 
-        /* @var AutoWireFactory&MockObject $factory */
         $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->setMethods(['canAutoWire'])
+                        ->onlyMethods(['canAutoWire'])
                         ->getMock();
         $factory->expects($this->once())
                 ->method('canAutoWire')
@@ -365,15 +329,12 @@ class AutoWireFactoryTest extends TestCase
     }
 
     /**
-     * Tests the canCreate method.
      * @throws ReflectionException
      * @covers ::canCreate
      */
     public function testCanCreateWithException(): void
     {
         $requestedName = __CLASS__;
-
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
 
         $this->parameterAliasResolver->expects($this->once())
@@ -381,9 +342,8 @@ class AutoWireFactoryTest extends TestCase
                                      ->with($this->identicalTo($requestedName))
                                      ->willThrowException($this->createMock(ReflectionException::class));
 
-        /* @var AutoWireFactory&MockObject $factory */
         $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->setMethods(['canAutoWire'])
+                        ->onlyMethods(['canAutoWire'])
                         ->getMock();
         $factory->expects($this->never())
                 ->method('canAutoWire');
@@ -395,23 +355,19 @@ class AutoWireFactoryTest extends TestCase
     }
 
     /**
-     * Tests the canCreate method.
      * @throws ReflectionException
      * @covers ::canCreate
      */
     public function testCanCreateWithoutClass(): void
     {
         $requestedName = 'array';
-
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
 
         $this->parameterAliasResolver->expects($this->never())
                                      ->method('getParameterAliasesForConstructor');
 
-        /* @var AutoWireFactory&MockObject $factory */
         $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->setMethods(['canAutoWire'])
+                        ->onlyMethods(['canAutoWire'])
                         ->getMock();
         $factory->expects($this->never())
                 ->method('canAutoWire');
@@ -423,7 +379,6 @@ class AutoWireFactoryTest extends TestCase
     }
 
     /**
-     * Tests the canAutoWire method.
      * @throws ReflectionException
      * @covers ::canAutoWire
      */
@@ -433,13 +388,10 @@ class AutoWireFactoryTest extends TestCase
             'abc' => ['def', 'ghi'],
             'jkl' => ['mno', 'pqr'],
         ];
-
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
 
-        /* @var AutoWireFactory&MockObject $factory */
         $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->setMethods(['hasAnyAlias'])
+                        ->onlyMethods(['hasAnyAlias'])
                         ->getMock();
         $factory->expects($this->exactly(2))
                 ->method('hasAnyAlias')
@@ -458,7 +410,6 @@ class AutoWireFactoryTest extends TestCase
     }
 
     /**
-     * Tests the canAutoWire method.
      * @throws ReflectionException
      * @covers ::canAutoWire
      */
@@ -468,13 +419,10 @@ class AutoWireFactoryTest extends TestCase
             'abc' => ['def', 'ghi'],
             'jkl' => ['mno', 'pqr'],
         ];
-
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
 
-        /* @var AutoWireFactory&MockObject $factory */
         $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->setMethods(['hasAnyAlias'])
+                        ->onlyMethods(['hasAnyAlias'])
                         ->getMock();
         $factory->expects($this->once())
                 ->method('hasAnyAlias')
@@ -487,7 +435,6 @@ class AutoWireFactoryTest extends TestCase
     }
 
     /**
-     * Tests the hasAnyAlias method.
      * @throws ReflectionException
      * @covers ::hasAnyAlias
      */
@@ -495,7 +442,6 @@ class AutoWireFactoryTest extends TestCase
     {
         $aliases = ['abc', 'def', 'ghi'];
 
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->exactly(2))
                   ->method('has')
@@ -515,7 +461,6 @@ class AutoWireFactoryTest extends TestCase
     }
 
     /**
-     * Tests the hasAnyAlias method.
      * @throws ReflectionException
      * @covers ::hasAnyAlias
      */
@@ -523,7 +468,6 @@ class AutoWireFactoryTest extends TestCase
     {
         $aliases = ['abc'];
 
-        /* @var ContainerInterface&MockObject $container */
         $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->once())
                   ->method('has')

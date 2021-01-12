@@ -10,9 +10,7 @@ use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithClassTypeHintConstructo
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithoutConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithParameterlessConstructor;
 use org\bovigo\vfs\vfsStream;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 use ReflectionException;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -29,7 +27,6 @@ class ParameterAliasResolverTest extends TestCase
     use ReflectionTrait;
 
     /**
-     * Tests the setCacheFile method.
      * @throws ReflectionException
      * @backupStaticAttributes enabled
      * @covers ::setCacheFile
@@ -54,12 +51,11 @@ class ParameterAliasResolverTest extends TestCase
 
         $this->assertEquals(
             $parameterAliasesCache,
-            $this->extractProperty(ParameterAliasResolver::class, 'parameterAliasesCache')
+            $this->extractStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache')
         );
     }
 
     /**
-     * Tests the setCacheFile method.
      * @throws ReflectionException
      * @backupStaticAttributes enabled
      * @covers ::setCacheFile
@@ -74,11 +70,10 @@ class ParameterAliasResolverTest extends TestCase
 
         ParameterAliasResolver::setCacheFile($cacheFile);
 
-        $this->assertEquals([], $this->extractProperty(ParameterAliasResolver::class, 'parameterAliasesCache'));
+        $this->assertEquals([], $this->extractStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache'));
     }
 
     /**
-     * Tests the setCacheFile method.
      * @throws ReflectionException
      * @backupStaticAttributes enabled
      * @covers ::setCacheFile
@@ -90,11 +85,10 @@ class ParameterAliasResolverTest extends TestCase
 
         ParameterAliasResolver::setCacheFile($cacheFile);
 
-        $this->assertEquals([], $this->extractProperty(ParameterAliasResolver::class, 'parameterAliasesCache'));
+        $this->assertEquals([], $this->extractStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache'));
     }
 
     /**
-     * Tests the getParameterAliasesForConstructor method.
      * @throws ReflectionException
      * @covers ::getParameterAliasesForConstructor
      */
@@ -120,9 +114,8 @@ class ParameterAliasResolverTest extends TestCase
             ],
         ];
 
-        /* @var ParameterAliasResolver&MockObject $resolver */
         $resolver = $this->getMockBuilder(ParameterAliasResolver::class)
-                         ->setMethods(['resolveParameterAliasesForConstructor', 'writeCacheToFile'])
+                         ->onlyMethods(['resolveParameterAliasesForConstructor', 'writeCacheToFile'])
                          ->getMock();
         $resolver->expects($this->once())
                  ->method('resolveParameterAliasesForConstructor')
@@ -130,19 +123,18 @@ class ParameterAliasResolverTest extends TestCase
                  ->willReturn($parameterAliases);
         $resolver->expects($this->once())
                  ->method('writeCacheToFile');
-        $this->injectProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $cache);
+        $this->injectStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $cache);
 
         $result = $resolver->getParameterAliasesForConstructor($className);
 
         $this->assertSame($parameterAliases, $result);
         $this->assertEquals(
             $expectedCache,
-            $this->extractProperty(ParameterAliasResolver::class, 'parameterAliasesCache')
+            $this->extractStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache')
         );
     }
 
     /**
-     * Tests the getParameterAliasesForConstructor method.
      * @throws ReflectionException
      * @covers ::getParameterAliasesForConstructor
      */
@@ -163,24 +155,22 @@ class ParameterAliasResolverTest extends TestCase
             'mno' => ['pqr', 'stu'],
         ];
 
-        /* @var ParameterAliasResolver&MockObject $resolver */
         $resolver = $this->getMockBuilder(ParameterAliasResolver::class)
-                         ->setMethods(['resolveParameterAliasesForConstructor', 'writeCacheToFile'])
+                         ->onlyMethods(['resolveParameterAliasesForConstructor', 'writeCacheToFile'])
                          ->getMock();
         $resolver->expects($this->never())
                  ->method('resolveParameterAliasesForConstructor');
         $resolver->expects($this->never())
                  ->method('writeCacheToFile');
-        $this->injectProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $cache);
+        $this->injectStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $cache);
 
         $result = $resolver->getParameterAliasesForConstructor($className);
 
         $this->assertSame($expectedResult, $result);
-        $this->assertSame($cache, $this->extractProperty(ParameterAliasResolver::class, 'parameterAliasesCache'));
+        $this->assertSame($cache, $this->extractStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache'));
     }
 
     /**
-     * Tests the resolveParameterAliasesForConstructor method.
      * @throws ReflectionException
      * @covers ::resolveParameterAliasesForConstructor
      */
@@ -194,21 +184,18 @@ class ParameterAliasResolverTest extends TestCase
             'stu' => ['jkl', 'mno'],
         ];
 
-        /* @var ReflectionParameter&MockObject $parameter1 */
         $parameter1 = $this->createMock(ReflectionParameter::class);
         $parameter1->expects($this->once())
                    ->method('getName')
                    ->willReturn('pqr');
 
-        /* @var ReflectionParameter&MockObject $parameter2 */
         $parameter2 = $this->createMock(ReflectionParameter::class);
         $parameter2->expects($this->once())
                    ->method('getName')
                    ->willReturn('stu');
 
-        /* @var ParameterAliasResolver&MockObject $resolver */
         $resolver = $this->getMockBuilder(ParameterAliasResolver::class)
-                         ->setMethods([
+                         ->onlyMethods([
                              'getReflectedParametersForConstructor',
                              'getAliasesForParameter',
                          ])
@@ -234,7 +221,6 @@ class ParameterAliasResolverTest extends TestCase
     }
 
     /**
-     * Tests the getReflectedParametersForConstructor method.
      * @throws ReflectionException
      * @covers ::getReflectedParametersForConstructor
      */
@@ -251,7 +237,6 @@ class ParameterAliasResolverTest extends TestCase
     }
 
     /**
-     * Tests the getReflectedParametersForConstructor method.
      * @throws ReflectionException
      * @covers ::getReflectedParametersForConstructor
      */
@@ -267,7 +252,6 @@ class ParameterAliasResolverTest extends TestCase
     }
 
     /**
-     * Tests the getReflectedParametersForConstructor method.
      * @throws ReflectionException
      * @covers ::getReflectedParametersForConstructor
      */
@@ -283,7 +267,6 @@ class ParameterAliasResolverTest extends TestCase
     }
 
     /**
-     * Tests the getAliasesForParameter method.
      * @throws ReflectionException
      * @covers ::getAliasesForParameter
      */
@@ -297,52 +280,15 @@ class ParameterAliasResolverTest extends TestCase
             '$def',
         ];
 
-        /* @var ReflectionClass&MockObject $class */
-        $class = $this->createMock(ReflectionClass::class);
-        $class->expects($this->any())
-              ->method('getName')
-              ->willReturn($className);
-
-        /* @var ReflectionParameter&MockObject $parameter */
-        $parameter = $this->createMock(ReflectionParameter::class);
-        $parameter->expects($this->any())
-                  ->method('getClass')
-                  ->willReturn($class);
-        $parameter->expects($this->any())
-                  ->method('getName')
-                  ->willReturn($parameterName);
-
-        $resolver = new ParameterAliasResolver();
-        $result = $this->invokeMethod($resolver, 'getAliasesForParameter', $parameter);
-
-        $this->assertEquals($expectedResult, $result);
-    }
-
-    /**
-     * Tests the getAliasesForParameter method.
-     * @throws ReflectionException
-     * @covers ::getAliasesForParameter
-     */
-    public function testGetAliasesForParameterWithTypeHint(): void
-    {
-        $typeName = 'abc';
-        $parameterName = 'def';
-        $expectedResult = [
-            'abc $def',
-            '$def',
-        ];
-
-        /* @var ReflectionNamedType&MockObject $type */
         $type = $this->createMock(ReflectionNamedType::class);
         $type->expects($this->any())
              ->method('getName')
-             ->willReturn($typeName);
+             ->willReturn($className);
+        $type->expects($this->once())
+             ->method('isBuiltin')
+             ->willReturn(false);
 
-        /* @var ReflectionParameter&MockObject $parameter */
         $parameter = $this->createMock(ReflectionParameter::class);
-        $parameter->expects($this->any())
-                  ->method('getClass')
-                  ->willReturn(null);
         $parameter->expects($this->any())
                   ->method('getType')
                   ->willReturn($type);
@@ -357,7 +303,41 @@ class ParameterAliasResolverTest extends TestCase
     }
 
     /**
-     * Tests the getAliasesForParameter method.
+     * @throws ReflectionException
+     * @covers ::getAliasesForParameter
+     */
+    public function testGetAliasesForParameterWithTypeHint(): void
+    {
+        $typeName = 'abc';
+        $parameterName = 'def';
+        $expectedResult = [
+            'abc $def',
+            '$def',
+        ];
+
+        $type = $this->createMock(ReflectionNamedType::class);
+        $type->expects($this->any())
+             ->method('getName')
+             ->willReturn($typeName);
+        $type->expects($this->once())
+             ->method('isBuiltin')
+             ->willReturn(true);
+
+        $parameter = $this->createMock(ReflectionParameter::class);
+        $parameter->expects($this->any())
+                  ->method('getType')
+                  ->willReturn($type);
+        $parameter->expects($this->any())
+                  ->method('getName')
+                  ->willReturn($parameterName);
+
+        $resolver = new ParameterAliasResolver();
+        $result = $this->invokeMethod($resolver, 'getAliasesForParameter', $parameter);
+
+        $this->assertEquals($expectedResult, $result);
+    }
+
+    /**
      * @throws ReflectionException
      * @covers ::getAliasesForParameter
      */
@@ -368,7 +348,6 @@ class ParameterAliasResolverTest extends TestCase
             '$abc',
         ];
 
-        /* @var ReflectionParameter&MockObject $parameter */
         $parameter = $this->createMock(ReflectionParameter::class);
         $parameter->expects($this->any())
                   ->method('getClass')
@@ -387,7 +366,6 @@ class ParameterAliasResolverTest extends TestCase
     }
 
     /**
-     * Tests the writeCacheToFile method.
      * @throws ReflectionException
      * @backupStaticAttributes enabled
      * @covers ::writeCacheToFile
@@ -405,8 +383,8 @@ class ParameterAliasResolverTest extends TestCase
         ];
         $cacheFile = vfsStream::url('root/cache-file');
 
-        $this->injectProperty(ParameterAliasResolver::class, 'cacheFile', $cacheFile);
-        $this->injectProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $parameterAliasesCache);
+        $this->injectStaticProperty(ParameterAliasResolver::class, 'cacheFile', $cacheFile);
+        $this->injectStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $parameterAliasesCache);
 
         $resolver = new ParameterAliasResolver();
         $this->invokeMethod($resolver, 'writeCacheToFile');
@@ -418,7 +396,6 @@ class ParameterAliasResolverTest extends TestCase
     }
 
     /**
-     * Tests the writeCacheToFile method.
      * @throws ReflectionException
      * @backupStaticAttributes enabled
      * @covers ::writeCacheToFile
@@ -437,8 +414,8 @@ class ParameterAliasResolverTest extends TestCase
         ];
         $cacheFile = vfsStream::url('root/cache-file');
 
-        $this->injectProperty(ParameterAliasResolver::class, 'cacheFile', $cacheFile);
-        $this->injectProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $parameterAliasesCache);
+        $this->injectStaticProperty(ParameterAliasResolver::class, 'cacheFile', $cacheFile);
+        $this->injectStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $parameterAliasesCache);
 
         $resolver = new ParameterAliasResolver();
         $this->invokeMethod($resolver, 'writeCacheToFile');
@@ -451,7 +428,6 @@ class ParameterAliasResolverTest extends TestCase
 
 
     /**
-     * Tests the writeCacheToFile method.
      * @throws ReflectionException
      * @backupStaticAttributes enabled
      * @covers ::writeCacheToFile

@@ -20,13 +20,13 @@ class ConfigReaderFactory implements FactoryInterface
      * The alias with which the application config is registered to the container.
      * @var string
      */
-    protected static $configAlias = 'config';
+    protected static string $configAlias = 'config';
 
     /**
      * The keys of the config.
-     * @var array|string[]
+     * @var array<string>
      */
-    protected $keys;
+    protected array $keys;
 
     /**
      * Sets alias with which the application config is registered to the container.
@@ -38,7 +38,6 @@ class ConfigReaderFactory implements FactoryInterface
     }
 
     /**
-     * Sets the state of the factory on deserialization.
      * @param array<mixed> $array
      * @return self
      */
@@ -50,7 +49,6 @@ class ConfigReaderFactory implements FactoryInterface
     }
 
     /**
-     * Initializes the factory.
      * @param string ...$keys
      */
     public function __construct(string ...$keys)
@@ -59,7 +57,6 @@ class ConfigReaderFactory implements FactoryInterface
     }
 
     /**
-     * Creates the service.
      * @param ContainerInterface $container
      * @param string $requestedName
      * @param array<mixed>|null $options

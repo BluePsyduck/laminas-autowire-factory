@@ -10,9 +10,9 @@ use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithoutConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithParameterlessConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithScalarTypeHintConstructor;
 use Interop\Container\ContainerInterface;
-use PHPUnit\Framework\TestCase;
 use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\ServiceManager;
+use PHPUnit\Framework\TestCase;
 
 /**
  * The integration test of the AutoWireFactory class.

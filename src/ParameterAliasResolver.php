@@ -6,6 +6,7 @@ namespace BluePsyduck\LaminasAutoWireFactory;
 
 use ReflectionClass;
 use ReflectionException;
+use ReflectionNamedType;
 use ReflectionParameter;
 
 /**
@@ -20,13 +21,13 @@ class ParameterAliasResolver
      * The cache file path to use.
      * @var string|null
      */
-    protected static $cacheFile = null;
+    protected static ?string $cacheFile = null;
 
     /**
      * The already resolved parameter aliases.
-     * @var array|string[][][]
+     * @var array<string, array<string, array<string>>>
      */
-    protected static $parameterAliasesCache = [];
+    protected static array $parameterAliasesCache = [];
 
     /**
      * Sets the cache file to use.
@@ -46,7 +47,7 @@ class ParameterAliasResolver
     /**
      * Returns the aliases for the parameters of the constructor.
      * @param string $className
-     * @return array|string[][]
+     * @return array<string, array<string>>
      * @throws ReflectionException
      */
     public function getParameterAliasesForConstructor(string $className): array
@@ -61,7 +62,7 @@ class ParameterAliasResolver
     /**
      * Resolves the parameter aliases for the constructor.
      * @param string $className
-     * @return array|string[][]
+     * @return array<string, array<string>>
      * @throws ReflectionException
      */
     protected function resolveParameterAliasesForConstructor(string $className): array
@@ -76,7 +77,7 @@ class ParameterAliasResolver
     /**
      * Returns the reflected parameters of the constructor.
      * @param string $className
-     * @return array|ReflectionParameter[]
+     * @return array<ReflectionParameter>
      * @throws ReflectionException
      */
     protected function getReflectedParametersForConstructor(string $className): array
@@ -92,17 +93,18 @@ class ParameterAliasResolver
     /**
      * Returns the aliases for the parameter.
      * @param ReflectionParameter $parameter
-     * @return array|string[]
+     * @return array<string>
      */
     protected function getAliasesForParameter(ReflectionParameter $parameter): array
     {
         $result = [];
 
-        if ($parameter->getClass() !== null) {
-            $result[] = $parameter->getClass()->getName() . ' $' . $parameter->getName();
-            $result[] = $parameter->getClass()->getName();
-        } elseif ($parameter->getType() !== null && method_exists($parameter->getType(), 'getName')) {
-            $result[] = $parameter->getType()->getName() . ' $' . $parameter->getName();
+        $type = $parameter->getType();
+        if ($type instanceof ReflectionNamedType) {
+            $result[] = $type->getName() . ' $' . $parameter->getName();
+            if (!$type->isBuiltin()) {
+                $result[] = $type->getName();
+            }
         }
 
         $result[] = '$' . $parameter->getName();

@@ -14,17 +14,8 @@ use Throwable;
  */
 class NoParameterMatchException extends AutoWireException
 {
-    /**
-     * The message template of the exception.
-     */
     private const MESSAGE = 'Unable to auto-wire parameter %s of class %s.';
 
-    /**
-     * Initializes the exception.
-     * @param string $className
-     * @param string $parameterName
-     * @param Throwable|null $previous
-     */
     public function __construct(string $className, string $parameterName, ?Throwable $previous = null)
     {
         parent::__construct(sprintf(self::MESSAGE, $parameterName, $className), 0, $previous);

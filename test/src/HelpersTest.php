@@ -20,7 +20,6 @@ use function BluePsyduck\LaminasAutoWireFactory\readConfig;
 class HelpersTest extends TestCase
 {
     /**
-     * Tests the injectAliasArray method.
      * @covers \BluePsyduck\LaminasAutoWireFactory\injectAliasArray
      */
     public function testInjectAliasArray(): void
@@ -33,7 +32,6 @@ class HelpersTest extends TestCase
     }
 
     /**
-     * Tests the readConfig method.
      * @covers \BluePsyduck\LaminasAutoWireFactory\readConfig
      */
     public function testReadConfig(): void
