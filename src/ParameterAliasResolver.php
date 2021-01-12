@@ -6,6 +6,7 @@ namespace BluePsyduck\LaminasAutoWireFactory;
 
 use ReflectionClass;
 use ReflectionException;
+use ReflectionNamedType;
 use ReflectionParameter;
 
 /**
@@ -98,13 +99,11 @@ class ParameterAliasResolver
     {
         $result = [];
 
-        if ($parameter->getClass() !== null) {
-            $result[] = $parameter->getClass()->getName() . ' $' . $parameter->getName();
-            $result[] = $parameter->getClass()->getName();
-        } else {
-            $type = $parameter->getType();
-            if ($type !== null && method_exists($type, 'getName')) {
-                $result[] = $type->getName() . ' $' . $parameter->getName();
+        $type = $parameter->getType();
+        if ($type instanceof ReflectionNamedType) {
+            $result[] = $type->getName() . ' $' . $parameter->getName();
+            if (!$type->isBuiltin()) {
+                $result[] = $type->getName();
             }
         }
 

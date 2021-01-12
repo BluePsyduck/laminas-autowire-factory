@@ -11,7 +11,6 @@ use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithoutConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithParameterlessConstructor;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 use ReflectionException;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -281,15 +280,18 @@ class ParameterAliasResolverTest extends TestCase
             '$def',
         ];
 
-        $class = $this->createMock(ReflectionClass::class);
-        $class->expects($this->any())
-              ->method('getName')
-              ->willReturn($className);
+        $type = $this->createMock(ReflectionNamedType::class);
+        $type->expects($this->any())
+             ->method('getName')
+             ->willReturn($className);
+        $type->expects($this->once())
+             ->method('isBuiltin')
+             ->willReturn(false);
 
         $parameter = $this->createMock(ReflectionParameter::class);
         $parameter->expects($this->any())
-                  ->method('getClass')
-                  ->willReturn($class);
+                  ->method('getType')
+                  ->willReturn($type);
         $parameter->expects($this->any())
                   ->method('getName')
                   ->willReturn($parameterName);
@@ -317,11 +319,11 @@ class ParameterAliasResolverTest extends TestCase
         $type->expects($this->any())
              ->method('getName')
              ->willReturn($typeName);
+        $type->expects($this->once())
+             ->method('isBuiltin')
+             ->willReturn(true);
 
         $parameter = $this->createMock(ReflectionParameter::class);
-        $parameter->expects($this->any())
-                  ->method('getClass')
-                  ->willReturn(null);
         $parameter->expects($this->any())
                   ->method('getType')
                   ->willReturn($type);
