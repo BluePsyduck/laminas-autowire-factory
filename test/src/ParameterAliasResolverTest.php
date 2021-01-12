@@ -52,7 +52,7 @@ class ParameterAliasResolverTest extends TestCase
 
         $this->assertEquals(
             $parameterAliasesCache,
-            $this->extractProperty(ParameterAliasResolver::class, 'parameterAliasesCache')
+            $this->extractStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache')
         );
     }
 
@@ -71,7 +71,7 @@ class ParameterAliasResolverTest extends TestCase
 
         ParameterAliasResolver::setCacheFile($cacheFile);
 
-        $this->assertEquals([], $this->extractProperty(ParameterAliasResolver::class, 'parameterAliasesCache'));
+        $this->assertEquals([], $this->extractStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache'));
     }
 
     /**
@@ -86,7 +86,7 @@ class ParameterAliasResolverTest extends TestCase
 
         ParameterAliasResolver::setCacheFile($cacheFile);
 
-        $this->assertEquals([], $this->extractProperty(ParameterAliasResolver::class, 'parameterAliasesCache'));
+        $this->assertEquals([], $this->extractStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache'));
     }
 
     /**
@@ -124,14 +124,14 @@ class ParameterAliasResolverTest extends TestCase
                  ->willReturn($parameterAliases);
         $resolver->expects($this->once())
                  ->method('writeCacheToFile');
-        $this->injectProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $cache);
+        $this->injectStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $cache);
 
         $result = $resolver->getParameterAliasesForConstructor($className);
 
         $this->assertSame($parameterAliases, $result);
         $this->assertEquals(
             $expectedCache,
-            $this->extractProperty(ParameterAliasResolver::class, 'parameterAliasesCache')
+            $this->extractStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache')
         );
     }
 
@@ -163,12 +163,12 @@ class ParameterAliasResolverTest extends TestCase
                  ->method('resolveParameterAliasesForConstructor');
         $resolver->expects($this->never())
                  ->method('writeCacheToFile');
-        $this->injectProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $cache);
+        $this->injectStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $cache);
 
         $result = $resolver->getParameterAliasesForConstructor($className);
 
         $this->assertSame($expectedResult, $result);
-        $this->assertSame($cache, $this->extractProperty(ParameterAliasResolver::class, 'parameterAliasesCache'));
+        $this->assertSame($cache, $this->extractStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache'));
     }
 
     /**
@@ -381,8 +381,8 @@ class ParameterAliasResolverTest extends TestCase
         ];
         $cacheFile = vfsStream::url('root/cache-file');
 
-        $this->injectProperty(ParameterAliasResolver::class, 'cacheFile', $cacheFile);
-        $this->injectProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $parameterAliasesCache);
+        $this->injectStaticProperty(ParameterAliasResolver::class, 'cacheFile', $cacheFile);
+        $this->injectStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $parameterAliasesCache);
 
         $resolver = new ParameterAliasResolver();
         $this->invokeMethod($resolver, 'writeCacheToFile');
@@ -412,8 +412,8 @@ class ParameterAliasResolverTest extends TestCase
         ];
         $cacheFile = vfsStream::url('root/cache-file');
 
-        $this->injectProperty(ParameterAliasResolver::class, 'cacheFile', $cacheFile);
-        $this->injectProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $parameterAliasesCache);
+        $this->injectStaticProperty(ParameterAliasResolver::class, 'cacheFile', $cacheFile);
+        $this->injectStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache', $parameterAliasesCache);
 
         $resolver = new ParameterAliasResolver();
         $this->invokeMethod($resolver, 'writeCacheToFile');

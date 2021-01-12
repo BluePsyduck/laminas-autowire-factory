@@ -63,7 +63,7 @@ class AutoWireFactoryTest extends TestCase
 
         $this->assertEquals(
             $parameterAliasesCache,
-            $this->extractProperty(ParameterAliasResolver::class, 'parameterAliasesCache')
+            $this->extractStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache')
         );
     }
 

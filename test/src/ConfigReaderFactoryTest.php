@@ -31,10 +31,10 @@ class ConfigReaderFactoryTest extends TestCase
     {
         $configAlias = 'abc';
 
-        $this->assertSame('config', $this->extractProperty(ConfigReaderFactory::class, 'configAlias'));
+        $this->assertSame('config', $this->extractStaticProperty(ConfigReaderFactory::class, 'configAlias'));
 
         ConfigReaderFactory::setConfigAlias($configAlias);
-        $this->assertSame($configAlias, $this->extractProperty(ConfigReaderFactory::class, 'configAlias'));
+        $this->assertSame($configAlias, $this->extractStaticProperty(ConfigReaderFactory::class, 'configAlias'));
     }
 
     /**
