@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1 - 2021-02-07
+
+### Fixed
+
+- Accidental hard dependency on PHP 8.0.0. Now it is ^8.0, as it should be.
+
 ## 1.1.0 - 2021-01-12
 
 ### Added
