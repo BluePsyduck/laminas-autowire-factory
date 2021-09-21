@@ -40,8 +40,8 @@ class AliasArrayInjectorFactoryTest extends TestCase
                 'def' => ClassWithoutConstructor::class,
             ],
             'invokables' => [
-                ClassWithParameterlessConstructor::class,
-                ClassWithoutConstructor::class,
+                ClassWithParameterlessConstructor::class => ClassWithParameterlessConstructor::class,
+                ClassWithoutConstructor::class => ClassWithoutConstructor::class ,
             ],
         ];
 

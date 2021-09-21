@@ -43,6 +43,7 @@ class AutoWireFactoryIntegrationTest extends TestCase
      */
     protected function createContainerWithExplicitFactories(): ContainerInterface
     {
+        // @phpstan-ignore-next-line
         $config = new Config([
             'services' => [
                 'string $property' => 'abc',
@@ -81,6 +82,7 @@ class AutoWireFactoryIntegrationTest extends TestCase
      */
     protected function createContainerWithAbstractFactory(): ContainerInterface
     {
+        // @phpstan-ignore-next-line
         $config = new Config([
             'services' => [
                 'string $property' => 'abc',
