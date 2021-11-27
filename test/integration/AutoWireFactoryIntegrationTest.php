@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BluePsyduckIntegrationTest\LaminasAutoWireFactory;
 
 use BluePsyduck\LaminasAutoWireFactory\AutoWireFactory;
+use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithAttributes;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithClassTypeHintConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithoutConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithParameterlessConstructor;
@@ -13,18 +14,19 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerExceptionInterface;
 
 /**
  * The integration test of the AutoWireFactory class.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \BluePsyduck\LaminasAutoWireFactory\AutoWireFactory
+ *
+ * @covers \BluePsyduck\LaminasAutoWireFactory\AutoWireFactory
  */
 class AutoWireFactoryIntegrationTest extends TestCase
 {
     /**
-     * Provides the data for the autoWiring test.
      * @return array<mixed>
      */
     public function provideAutoWiredClasses(): array
@@ -34,26 +36,34 @@ class AutoWireFactoryIntegrationTest extends TestCase
             [ClassWithParameterlessConstructor::class],
             [ClassWithClassTypeHintConstructor::class],
             [ClassWithScalarTypeHintConstructor::class],
+            [ClassWithAttributes::class],
         ];
     }
 
-    /**
-     * Creates the container for the test.
-     * @return ContainerInterface
-     */
-    protected function createContainerWithExplicitFactories(): ContainerInterface
+    private function createContainerWithExplicitFactories(): ContainerInterface
     {
         // @phpstan-ignore-next-line
         $config = new Config([
             'services' => [
                 'string $property' => 'abc',
                 'array $instances' => ['def', 'ghi'],
+                'test.foo' => new ClassWithoutConstructor(),
+                'config' => [
+                    'test' => [
+                        'property' => 'jkl',
+                        'instances' => [
+                            ClassWithoutConstructor::class,
+                            ClassWithParameterlessConstructor::class,
+                        ],
+                    ],
+                ],
             ],
             'factories' => [
                 ClassWithClassTypeHintConstructor::class => AutoWireFactory::class,
                 ClassWithoutConstructor::class => AutoWireFactory::class,
                 ClassWithParameterlessConstructor::class => AutoWireFactory::class,
                 ClassWithScalarTypeHintConstructor::class => AutoWireFactory::class,
+                ClassWithAttributes::class => AutoWireFactory::class,
             ],
         ]);
 
@@ -64,11 +74,11 @@ class AutoWireFactoryIntegrationTest extends TestCase
     }
 
     /**
-     * Tests the autoWiring method.
-     * @dataProvider provideAutoWiredClasses
      * @param class-string $className
+     * @throws ContainerExceptionInterface
+     * @dataProvider provideAutoWiredClasses
      */
-    public function testAutoWiringWithExplicitFactories($className): void
+    public function testAutoWiringWithExplicitFactories(string $className): void
     {
         $container = $this->createContainerWithExplicitFactories();
         $instance = $container->get($className);
@@ -76,10 +86,6 @@ class AutoWireFactoryIntegrationTest extends TestCase
         $this->assertInstanceOf($className, $instance);
     }
 
-    /**
-     * Creates the container for the test.
-     * @return ContainerInterface
-     */
     protected function createContainerWithAbstractFactory(): ContainerInterface
     {
         // @phpstan-ignore-next-line
@@ -87,6 +93,16 @@ class AutoWireFactoryIntegrationTest extends TestCase
             'services' => [
                 'string $property' => 'abc',
                 'array $instances' => ['def', 'ghi'],
+                'test.foo' => new ClassWithoutConstructor(),
+                'config' => [
+                    'test' => [
+                        'property' => 'jkl',
+                        'instances' => [
+                            ClassWithoutConstructor::class,
+                            ClassWithParameterlessConstructor::class,
+                        ],
+                    ],
+                ],
             ],
             'abstract_factories' => [
                 AutoWireFactory::class,
@@ -100,11 +116,11 @@ class AutoWireFactoryIntegrationTest extends TestCase
     }
 
     /**
-     * Tests the autoWiring method.
-     * @dataProvider provideAutoWiredClasses
      * @param class-string $className
+     * @throws ContainerExceptionInterface
+     * @dataProvider provideAutoWiredClasses
      */
-    public function testAutoWiringWithAbstractFactory($className): void
+    public function testAutoWiringWithAbstractFactory(string $className): void
     {
         $container = $this->createContainerWithAbstractFactory();
         $instance = $container->get($className);

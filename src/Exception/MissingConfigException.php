@@ -18,7 +18,7 @@ class MissingConfigException extends ServiceNotCreatedException
     private const MESSAGE = 'Failed to read config: %s';
 
     /**
-     * @param array<string> $configKeys
+     * @param array<array-key> $configKeys
      * @param Throwable|null $previous
      */
     public function __construct(array $configKeys, ?Throwable $previous = null)

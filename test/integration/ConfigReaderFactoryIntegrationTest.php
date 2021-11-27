@@ -4,26 +4,24 @@ declare(strict_types=1);
 
 namespace BluePsyduckIntegrationTest\LaminasAutoWireFactory;
 
+use BluePsyduck\LaminasAutoWireFactory\AutoWireUtils;
 use BluePsyduck\LaminasAutoWireFactory\Exception\MissingConfigException;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase;
-
-use function BluePsyduck\LaminasAutoWireFactory\readConfig;
+use Psr\Container\ContainerExceptionInterface;
 
 /**
  * The integration test of the ConfigReaderFactory class.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
+ *
+ * @covers \BluePsyduck\LaminasAutoWireFactory\Factory\ConfigReaderFactory
  */
 class ConfigReaderFactoryIntegrationTest extends TestCase
 {
-    /**
-     * Creates a container with a test config.
-     * @return ContainerInterface
-     */
-    protected function createContainerWithConfig(): ContainerInterface
+    private function createContainerWithConfig(): ContainerInterface
     {
         $config = [
             'abc' => [
@@ -40,7 +38,6 @@ class ConfigReaderFactoryIntegrationTest extends TestCase
     }
 
     /**
-     * Provides the data for the readConfigFactory test.
      * @return array<mixed>
      */
     public function provideReadConfigFactory(): array
@@ -54,23 +51,23 @@ class ConfigReaderFactoryIntegrationTest extends TestCase
     }
 
     /**
-     * Tests the readConfig function.
-     * @param array<string> $keys
+     * @param array<array-key> $keys
      * @param mixed $expectedResult
+     * @throws ContainerExceptionInterface
      * @dataProvider provideReadConfigFactory
      */
-    public function testReadConfig(array $keys, $expectedResult): void
+    public function testReadConfig(array $keys, mixed $expectedResult): void
     {
         $container = $this->createContainerWithConfig();
 
-        $callable = readConfig(...$keys);
+        $callable = AutoWireUtils::readConfig(...$keys);
         $result = $callable($container, 'foo');
 
         $this->assertSame($expectedResult, $result);
     }
 
     /**
-     * Tests the readConfig function.
+     * @throws ContainerExceptionInterface
      */
     public function testReadConfigWithException(): void
     {
@@ -78,7 +75,7 @@ class ConfigReaderFactoryIntegrationTest extends TestCase
 
         $this->expectException(MissingConfigException::class);
 
-        $callable = readConfig('abc', 'foo', 'bar');
+        $callable = AutoWireUtils::readConfig('abc', 'foo', 'bar');
         $callable($container, 'foo');
     }
 }

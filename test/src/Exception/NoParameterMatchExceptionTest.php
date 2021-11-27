@@ -13,21 +13,17 @@ use PHPUnit\Framework\TestCase;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \BluePsyduck\LaminasAutoWireFactory\Exception\NoParameterMatchException
+ * @covers \BluePsyduck\LaminasAutoWireFactory\Exception\NoParameterMatchException
  */
 class NoParameterMatchExceptionTest extends TestCase
 {
-    /**
-     * @covers ::__construct
-     */
     public function testConstruct(): void
     {
-        $className = 'abc';
-        $parameterName = 'def';
-        $expectedMessage = 'Unable to auto-wire parameter def of class abc.';
+        $parameter = 'abc';
+        $expectedMessage = 'Unable to auto-wire parameter abc.';
         $previous = $this->createMock(Exception::class);
 
-        $exception = new NoParameterMatchException($className, $parameterName, $previous);
+        $exception = new NoParameterMatchException($parameter, $previous);
 
         $this->assertSame($expectedMessage, $exception->getMessage());
         $this->assertSame($previous, $exception->getPrevious());

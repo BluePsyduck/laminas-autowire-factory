@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BluePsyduckIntegrationTest\LaminasAutoWireFactory;
 
+use BluePsyduck\LaminasAutoWireFactory\AutoWireUtils;
 use BluePsyduck\LaminasAutoWireFactory\Exception\MissingConfigException;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithoutConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithParameterlessConstructor;
@@ -11,23 +12,19 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase;
-
-use function BluePsyduck\LaminasAutoWireFactory\injectAliasArray;
+use Psr\Container\ContainerExceptionInterface;
 
 /**
  * The integration test of the AliasArrayInjectorFactory class.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \BluePsyduck\LaminasAutoWireFactory\AliasArrayInjectorFactory
+ *
+ * @covers \BluePsyduck\LaminasAutoWireFactory\AliasArrayInjectorFactory
  */
 class AliasArrayInjectorFactoryTest extends TestCase
 {
-    /**
-     * Creates a container with a test config.
-     * @return ContainerInterface
-     */
-    protected function createContainerWithConfig(): ContainerInterface
+    private function createContainerWithConfig(): ContainerInterface
     {
         $config = [
             'foo' => [
@@ -53,7 +50,7 @@ class AliasArrayInjectorFactoryTest extends TestCase
     }
 
     /**
-     * Tests the injectAliasArray method.
+     * @throws ContainerExceptionInterface
      */
     public function testInjectAliasArray(): void
     {
@@ -63,14 +60,14 @@ class AliasArrayInjectorFactoryTest extends TestCase
             new ClassWithoutConstructor(),
         ];
 
-        $callable = injectAliasArray('foo', 'bar');
+        $callable = AutoWireUtils::injectAliasArray('foo', 'bar');
         $result = $callable($container, 'test');
 
         $this->assertEquals($expectedResult, $result);
     }
 
     /**
-     * Tests the injectAliasArray method.
+     * @throws ContainerExceptionInterface
      */
     public function testInjectAliasArrayWithError(): void
     {
@@ -78,7 +75,7 @@ class AliasArrayInjectorFactoryTest extends TestCase
 
         $this->expectException(MissingConfigException::class);
 
-        $callable = injectAliasArray('unknown');
+        $callable = AutoWireUtils::injectAliasArray('unknown');
         $callable($container, 'test');
     }
 }

@@ -13,16 +13,17 @@
         }
     ],
     "require": {
-        "php": "^7.4 | ^8.0",
-        "laminas/laminas-servicemanager": "^3.0"
+        "php": "^8.0",
+        "laminas/laminas-servicemanager": "^3.0",
+        "psr/simple-cache": "^3.0"
     },
     "require-dev": {
         "bluepsyduck/test-helper": "^2.0",
         "laminas/laminas-config-aggregator": "^1.1",
         "mikey179/vfsstream": "^1.6",
-        "phpstan/phpstan": "^0.12",
-        "phpstan/phpstan-phpunit": "^0.12",
-        "phpstan/phpstan-strict-rules": "^0.12",
+        "phpstan/phpstan": "^1.0",
+        "phpstan/phpstan-phpunit": "^1.0",
+        "phpstan/phpstan-strict-rules": "^1.0",
         "phpunit/phpunit": "^9.0",
         "rregeer/phpunit-coverage-check": "^0.3",
         "squizlabs/php_codesniffer": "^3.4"
@@ -30,10 +31,7 @@
     "autoload": {
         "psr-4": {
             "BluePsyduck\\LaminasAutoWireFactory\\": "src/"
-        },
-        "files": [
-            "src/helpers.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {

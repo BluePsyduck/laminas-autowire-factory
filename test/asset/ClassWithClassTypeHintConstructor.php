@@ -12,12 +12,9 @@ namespace BluePsyduckTestAsset\LaminasAutoWireFactory;
  */
 class ClassWithClassTypeHintConstructor
 {
-    public $foo;
-    public $bar;
-
-    public function __construct(ClassWithoutConstructor $foo, ClassWithParameterlessConstructor $bar)
-    {
-        $this->foo = $foo;
-        $this->bar = $bar;
+    public function __construct(
+        public ClassWithoutConstructor $foo,
+        public ClassWithParameterlessConstructor $bar,
+    ) {
     }
 }

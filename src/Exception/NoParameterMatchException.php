@@ -14,10 +14,10 @@ use Throwable;
  */
 class NoParameterMatchException extends AutoWireException
 {
-    private const MESSAGE = 'Unable to auto-wire parameter %s of class %s.';
+    private const MESSAGE = 'Unable to auto-wire parameter %s.';
 
-    public function __construct(string $className, string $parameterName, ?Throwable $previous = null)
+    public function __construct(string $parameter, ?Throwable $previous = null)
     {
-        parent::__construct(sprintf(self::MESSAGE, $parameterName, $className), 0, $previous);
+        parent::__construct(sprintf(self::MESSAGE, $parameter), 0, $previous);
     }
 }
