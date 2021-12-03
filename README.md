@@ -5,8 +5,9 @@
 [![build](https://img.shields.io/github/workflow/status/BluePsyduck/laminas-autowire-factory/CI?logo=github)](https://github.com/BluePsyduck/laminas-autowire-factory/actions)
 [![Codecov](https://img.shields.io/codecov/c/gh/BluePsyduck/laminas-autowire-factory?logo=codecov)](https://codecov.io/gh/BluePsyduck/laminas-autowire-factory)
 
-This library provides few factories and attributes helping with auto-wiring service classes to make writing actual 
-factories less common. 
+This library provides few factories and attributes helping with auto-wiring service classes for the 
+[Laminas ServiceManager](https://github.com/laminas/laminas-servicemanager/), to make writing actual factories less 
+common. 
 
 ## Revolver strategies
 
@@ -60,7 +61,7 @@ In this case, only one alias can be checked due to missing information:
 
 1. `$fancyParameter`: Fallback is the only possible alias.
 
-### Resolve by Alias
+### Resolve by alias
 
 The parameter is resolved by specifying the exact alias to request from the container. This is done by using the 
 `Alias` attribute:
@@ -101,7 +102,7 @@ As default, the resolver uses the alias `config` to fetch the application config
 available through another alias, set the alias to use via `ReadConfig::$configAlias = 'fancy-config'`. All config-bases
 resolvers will use this alias.
 
-### Inject an array of services by their alias
+### Inject an array of services by their aliases
 
 There may be the case where the config specifies a list of aliases, of which the corresponding services are needed in 
 the service. For this, the `InjectAliasArray` attribute can be used. Again, the attribute expects the config keys to 

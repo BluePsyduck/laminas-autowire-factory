@@ -14,8 +14,7 @@
     ],
     "require": {
         "php": "^8.0",
-        "laminas/laminas-servicemanager": "^3.0",
-        "psr/simple-cache": "^3.0"
+        "laminas/laminas-servicemanager": "^3.0"
     },
     "require-dev": {
         "bluepsyduck/test-helper": "^2.0",
