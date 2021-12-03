@@ -10,7 +10,6 @@ jobs:
     name: General
     uses: BluePsyduck/github-workflows/.github/workflows/ci-php-general.yaml@v1
 
-
   call-workflow-ci-php-tests:
     name: Tests
     uses: BluePsyduck/github-workflows/.github/workflows/ci-php-tests.yaml@v1
