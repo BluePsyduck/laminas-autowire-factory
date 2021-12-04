@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace BluePsyduckTestAsset\LaminasAutoWireFactory;
 
-use BluePsyduck\LaminasAutoWireFactory\Resolver\Alias;
-use BluePsyduck\LaminasAutoWireFactory\Resolver\InjectAliasArray;
-use BluePsyduck\LaminasAutoWireFactory\Resolver\ReadConfig;
+use BluePsyduck\LaminasAutoWireFactory\Attribute\Alias;
+use BluePsyduck\LaminasAutoWireFactory\Attribute\InjectAliasArray;
+use BluePsyduck\LaminasAutoWireFactory\Attribute\ReadConfig;
 
 /**
  * A class using attributes to resolve the parameters.

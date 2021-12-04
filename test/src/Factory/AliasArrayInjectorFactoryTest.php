@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BluePsyduckTest\LaminasAutoWireFactory\Factory;
 
 use BluePsyduck\LaminasAutoWireFactory\Factory\AliasArrayInjectorFactory;
-use BluePsyduck\LaminasAutoWireFactory\Resolver\InjectAliasArray;
+use BluePsyduck\LaminasAutoWireFactory\Resolver\AliasArrayResolver;
 use BluePsyduck\TestHelper\ReflectionTrait;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
@@ -28,7 +28,7 @@ class AliasArrayInjectorFactoryTest extends TestCase
     public function testCreateResolver(): void
     {
         $keys = ['abc', 'def'];
-        $expectedResult = new InjectAliasArray(...$keys);
+        $expectedResult = new AliasArrayResolver($keys);
 
         $instance = new AliasArrayInjectorFactory(...$keys);
 

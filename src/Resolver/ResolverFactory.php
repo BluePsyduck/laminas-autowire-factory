@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BluePsyduck\LaminasAutoWireFactory\Resolver;
 
+use BluePsyduck\LaminasAutoWireFactory\Attribute\ResolverAttribute;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
@@ -40,9 +41,11 @@ class ResolverFactory
      */
     public function createResolverForParameter(ReflectionParameter $parameter): ResolverInterface
     {
-        $attributes = $parameter->getAttributes(ResolverInterface::class, ReflectionAttribute::IS_INSTANCEOF);
+        $attributes = $parameter->getAttributes(ResolverAttribute::class, ReflectionAttribute::IS_INSTANCEOF);
         if (count($attributes) > 0) {
-            $resolver = $attributes[0]->newInstance();
+            /* @var ResolverAttribute $attribute*/
+            $attribute = $attributes[0]->newInstance();
+            $resolver = $attribute->createResolver();
         } else {
             $resolver = new DefaultResolver();
         }

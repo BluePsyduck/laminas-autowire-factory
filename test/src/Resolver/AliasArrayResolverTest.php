@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BluePsyduckTest\LaminasAutoWireFactory\Resolver;
 
-use BluePsyduck\LaminasAutoWireFactory\Resolver\InjectAliasArray;
+use BluePsyduck\LaminasAutoWireFactory\Resolver\AliasArrayResolver;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -16,9 +16,9 @@ use stdClass;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
- * @covers \BluePsyduck\LaminasAutoWireFactory\Resolver\InjectAliasArray
+ * @covers \BluePsyduck\LaminasAutoWireFactory\Resolver\AliasArrayResolver
  */
-class InjectAliasArrayTest extends TestCase
+class AliasArrayResolverTest extends TestCase
 {
     /**
      * @throws ContainerExceptionInterface
@@ -44,7 +44,7 @@ class InjectAliasArrayTest extends TestCase
                       ['jkl', $object2],
                   ]);
 
-        $instance = new InjectAliasArray('abc', 'def');
+        $instance = new AliasArrayResolver(['abc', 'def']);
 
         $result = $instance->resolve($container);
         $this->assertEquals($expectedResult, $result);
@@ -72,7 +72,7 @@ class InjectAliasArrayTest extends TestCase
                       ['ghi', $object1],
                   ]);
 
-        $instance = new InjectAliasArray('abc', 'def');
+        $instance = new AliasArrayResolver(['abc', 'def']);
 
         $result = $instance->resolve($container);
         $this->assertEquals($expectedResult, $result);
@@ -80,7 +80,7 @@ class InjectAliasArrayTest extends TestCase
 
     public function testSerialize(): void
     {
-        $instance = new InjectAliasArray('abc', 'def');
+        $instance = new AliasArrayResolver(['abc', 'def']);
 
         $result = unserialize(serialize($instance));
         $this->assertEquals($instance, $result);

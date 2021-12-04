@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BluePsyduckTest\LaminasAutoWireFactory\Resolver;
 
+use BluePsyduck\LaminasAutoWireFactory\Attribute\ResolverAttribute;
 use BluePsyduck\LaminasAutoWireFactory\Resolver\DefaultResolver;
 use BluePsyduck\LaminasAutoWireFactory\Resolver\ResolverFactory;
 use BluePsyduck\LaminasAutoWireFactory\Resolver\ResolverInterface;
@@ -74,10 +75,15 @@ class ResolverFactoryTest extends TestCase
     {
         $resolver = $this->createMock(ResolverInterface::class);
 
+        $resolverAttribute = $this->createMock(ResolverAttribute::class);
+        $resolverAttribute->expects($this->once())
+                          ->method('createResolver')
+                          ->willReturn($resolver);
+
         $attribute = $this->createMock(ReflectionAttribute::class);
         $attribute->expects($this->once())
                   ->method('newInstance')
-                  ->willReturn($resolver);
+                  ->willReturn($resolverAttribute);
 
         $parameter = $this->createMock(ReflectionParameter::class);
         $parameter->expects($this->once())

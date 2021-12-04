@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BluePsyduckTest\LaminasAutoWireFactory\Factory;
 
 use BluePsyduck\LaminasAutoWireFactory\Factory\ConfigReaderFactory;
-use BluePsyduck\LaminasAutoWireFactory\Resolver\ReadConfig;
+use BluePsyduck\LaminasAutoWireFactory\Resolver\ConfigResolver;
 use BluePsyduck\TestHelper\ReflectionTrait;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
@@ -28,7 +28,7 @@ class ConfigReaderFactoryTest extends TestCase
     public function testCreateResolver(): void
     {
         $keys = ['abc', 'def'];
-        $expectedResult = new ReadConfig(...$keys);
+        $expectedResult = new ConfigResolver($keys);
 
         $instance = new ConfigReaderFactory(...$keys);
 

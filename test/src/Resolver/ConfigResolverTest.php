@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BluePsyduckTest\LaminasAutoWireFactory\Resolver;
 
 use BluePsyduck\LaminasAutoWireFactory\Exception\MissingConfigException;
-use BluePsyduck\LaminasAutoWireFactory\Resolver\ReadConfig;
+use BluePsyduck\LaminasAutoWireFactory\Resolver\ConfigResolver;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -15,9 +15,10 @@ use Psr\Container\ContainerInterface;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @covers \BluePsyduck\LaminasAutoWireFactory\Resolver\ReadConfig
+ *
+ * @covers \BluePsyduck\LaminasAutoWireFactory\Resolver\ConfigResolver
  */
-class ReadConfigTest extends TestCase
+class ConfigResolverTest extends TestCase
 {
     /**
      * @return array<mixed>
@@ -60,7 +61,7 @@ class ReadConfigTest extends TestCase
             $this->expectException(MissingConfigException::class);
         }
 
-        $instance = new ReadConfig(...$keys);
+        $instance = new ConfigResolver($keys);
 
         $result = $instance->resolve($container);
         $this->assertEquals($expectedResult, $result);
@@ -88,7 +89,7 @@ class ReadConfigTest extends TestCase
                   ->with($this->identicalTo('config'))
                   ->willReturn($resultHas);
 
-        $instance = new ReadConfig('abc', 'def');
+        $instance = new ConfigResolver(['abc', 'def']);
 
         $result = $instance->canResolve($container);
         $this->assertSame($expectedResult, $result);
@@ -96,7 +97,7 @@ class ReadConfigTest extends TestCase
 
     public function testSerialize(): void
     {
-        $instance = new ReadConfig('abc', 'def', 'ghi');
+        $instance = new ConfigResolver(['abc', 'def', 'ghi']);
 
         $result = unserialize(serialize($instance));
         $this->assertEquals($instance, $result);

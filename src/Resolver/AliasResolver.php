@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BluePsyduck\LaminasAutoWireFactory\Resolver;
 
-use Attribute;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -13,8 +12,7 @@ use Psr\Container\ContainerInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-#[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
-class Alias implements ResolverInterface
+class AliasResolver implements ResolverInterface
 {
     public function __construct(
         private string $alias

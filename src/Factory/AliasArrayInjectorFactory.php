@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BluePsyduck\LaminasAutoWireFactory\Factory;
 
-use BluePsyduck\LaminasAutoWireFactory\Resolver\InjectAliasArray;
+use BluePsyduck\LaminasAutoWireFactory\Resolver\AliasArrayResolver;
 use BluePsyduck\LaminasAutoWireFactory\Resolver\ResolverInterface;
 
 /**
@@ -17,6 +17,6 @@ class AliasArrayInjectorFactory extends AbstractConfigResolverFactory
 {
     protected function createResolver(array $keys): ResolverInterface
     {
-        return new InjectAliasArray(...$keys);
+        return new AliasArrayResolver($keys);
     }
 }

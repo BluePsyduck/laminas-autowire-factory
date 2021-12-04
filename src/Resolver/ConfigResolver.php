@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BluePsyduck\LaminasAutoWireFactory\Resolver;
 
-use Attribute;
 use BluePsyduck\LaminasAutoWireFactory\Exception\MissingConfigException;
 use Psr\Container\ContainerInterface;
 
@@ -14,8 +13,7 @@ use Psr\Container\ContainerInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-#[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
-class ReadConfig implements ResolverInterface
+class ConfigResolver implements ResolverInterface
 {
     /**
      * The alias with which the application config is registered to the container.
@@ -24,13 +22,11 @@ class ReadConfig implements ResolverInterface
     public static string $configAlias = 'config';
 
     /**
-     * @var array<array-key>
+     * @param array<array-key> $keys
      */
-    private array $keys;
-
-    public function __construct(string|int ...$keys)
-    {
-        $this->keys = $keys;
+    public function __construct(
+        private array $keys
+    ) {
     }
 
     public function resolve(ContainerInterface $container): mixed

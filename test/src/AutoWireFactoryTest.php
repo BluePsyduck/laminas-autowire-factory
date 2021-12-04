@@ -6,8 +6,8 @@ namespace BluePsyduckTest\LaminasAutoWireFactory;
 
 use BluePsyduck\LaminasAutoWireFactory\AutoWireFactory;
 use BluePsyduck\LaminasAutoWireFactory\Exception\FailedReflectionException;
-use BluePsyduck\LaminasAutoWireFactory\Resolver\Alias;
-use BluePsyduck\LaminasAutoWireFactory\Resolver\ReadConfig;
+use BluePsyduck\LaminasAutoWireFactory\Resolver\AliasResolver;
+use BluePsyduck\LaminasAutoWireFactory\Resolver\ConfigResolver;
 use BluePsyduck\LaminasAutoWireFactory\Resolver\ResolverFactory;
 use BluePsyduck\LaminasAutoWireFactory\Resolver\ResolverInterface;
 use BluePsyduck\TestHelper\ReflectionTrait;
@@ -33,7 +33,7 @@ class AutoWireFactoryTest extends TestCase
     use ReflectionTrait;
 
     // phpcs:ignore
-    private const TEST_CACHE = 'a:1:{s:3:"foo";a:2:{i:0;O:49:"BluePsyduck\LaminasAutoWireFactory\Resolver\Alias":1:{s:1:"a";s:3:"abc";}i:1;O:54:"BluePsyduck\LaminasAutoWireFactory\Resolver\ReadConfig":1:{s:1:"k";a:2:{i:0;s:3:"def";i:1;s:3:"ghi";}}}}';
+    private const TEST_CACHE = 'a:1:{s:3:"foo";a:2:{i:0;O:57:"BluePsyduck\LaminasAutoWireFactory\Resolver\AliasResolver":1:{s:1:"a";s:3:"abc";}i:1;O:58:"BluePsyduck\LaminasAutoWireFactory\Resolver\ConfigResolver":1:{s:1:"k";a:2:{i:0;s:3:"def";i:1;s:3:"ghi";}}}}';
 
     /** @var ResolverFactory&MockObject */
     private ResolverFactory $resolverFactory;
@@ -100,8 +100,8 @@ class AutoWireFactoryTest extends TestCase
 
         $cache = [
             'foo' => [
-                new Alias('abc'),
-                new ReadConfig('def', 'ghi'),
+                new AliasResolver('abc'),
+                new ConfigResolver(['def', 'ghi']),
             ]
         ];
 
@@ -130,8 +130,8 @@ class AutoWireFactoryTest extends TestCase
 
         $cache = [
             'foo' => [
-                new Alias('abc'),
-                new ReadConfig('def', 'ghi'),
+                new AliasResolver('abc'),
+                new ConfigResolver(['def', 'ghi']),
             ]
         ];
 
@@ -155,8 +155,8 @@ class AutoWireFactoryTest extends TestCase
     {
         $cache = [
             'foo' => [
-                new Alias('abc'),
-                new ReadConfig('def', 'ghi'),
+                new AliasResolver('abc'),
+                new ConfigResolver(['def', 'ghi']),
             ],
         ];
 

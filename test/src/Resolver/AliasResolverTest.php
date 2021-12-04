@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BluePsyduckTest\LaminasAutoWireFactory\Resolver;
 
-use BluePsyduck\LaminasAutoWireFactory\Resolver\Alias;
+use BluePsyduck\LaminasAutoWireFactory\Resolver\AliasResolver;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -16,9 +16,9 @@ use stdClass;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
- * @covers \BluePsyduck\LaminasAutoWireFactory\Resolver\Alias
+ * @covers \BluePsyduck\LaminasAutoWireFactory\Resolver\AliasResolver
  */
-class AliasTest extends TestCase
+class AliasResolverTest extends TestCase
 {
     /**
      * @throws ContainerExceptionInterface
@@ -34,7 +34,7 @@ class AliasTest extends TestCase
                   ->with($this->identicalTo($alias))
                   ->willReturn($value);
 
-        $instance = new Alias($alias);
+        $instance = new AliasResolver($alias);
 
         $result = $instance->resolve($container);
         $this->assertSame($value, $result);
@@ -64,7 +64,7 @@ class AliasTest extends TestCase
                   ->with($this->identicalTo($alias))
                   ->willReturn($resultHas);
 
-        $instance = new Alias($alias);
+        $instance = new AliasResolver($alias);
 
         $result = $instance->canResolve($container);
         $this->assertSame($expectedResult, $result);
@@ -72,7 +72,7 @@ class AliasTest extends TestCase
 
     public function testSerialize(): void
     {
-        $instance = new Alias('abc');
+        $instance = new AliasResolver('abc');
 
         $result = unserialize(serialize($instance));
         $this->assertEquals($instance, $result);

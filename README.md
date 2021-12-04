@@ -67,7 +67,7 @@ The parameter is resolved by specifying the exact alias to request from the cont
 `Alias` attribute:
 
 ```php
-use BluePsyduck\LaminasAutoWireFactory\Resolver\Alias;
+use BluePsyduck\LaminasAutoWireFactory\Attribute\Alias;
 
 class ClassWithAliasParameter {
     public function __construct(
@@ -86,7 +86,7 @@ The AutoWireFactory is also able to inject a value from the application config t
 attribute. The attribute expects the config keys.
 
 ```php
-use BluePsyduck\LaminasAutoWireFactory\Resolver\ReadConfig;
+use BluePsyduck\LaminasAutoWireFactory\Attribute\ReadConfig;
 
 class ClassWithConfigValue {
     public function __construct(
@@ -109,7 +109,7 @@ the service. For this, the `InjectAliasArray` attribute can be used. Again, the 
 read the aliases from.
 
 ```php
-use BluePsyduck\LaminasAutoWireFactory\Resolver\ReadConfig;
+use BluePsyduck\LaminasAutoWireFactory\Attribute\InjectAliasArray;
 
 /*
  
@@ -242,8 +242,8 @@ Let's assume we have the following application config from which we want to take
 We want to auto-wire the following service class:
 
 ```php
-use BluePsyduck\LaminasAutoWireFactory\Resolver\ReadConfig;
-use BluePsyduck\LaminasAutoWireFactory\Resolver\InjectAliasArray;
+use BluePsyduck\LaminasAutoWireFactory\Attribute\ReadConfig;
+use BluePsyduck\LaminasAutoWireFactory\Attribute\InjectAliasArray;
 
 class FancyService {
     public function __construct(
