@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0 - Unreleased
+## 2.0.0 - 2021-12-13
 
 - Re-implemented the library to allow using attributes to resolve parameters of the service classes.
 
