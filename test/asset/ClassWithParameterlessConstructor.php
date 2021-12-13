@@ -12,7 +12,7 @@ namespace BluePsyduckTestAsset\LaminasAutoWireFactory;
  */
 class ClassWithParameterlessConstructor
 {
-    public $property;
+    public string $property;
 
     public function __construct()
     {

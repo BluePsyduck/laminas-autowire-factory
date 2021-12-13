@@ -13,13 +13,10 @@ use PHPUnit\Framework\TestCase;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \BluePsyduck\LaminasAutoWireFactory\Exception\MissingConfigException
+ * @covers \BluePsyduck\LaminasAutoWireFactory\Exception\MissingConfigException
  */
 class MissingConfigExceptionTest extends TestCase
 {
-    /**
-     * @covers ::__construct
-     */
     public function testConstruct(): void
     {
         $keys = ['abc', 'def'];

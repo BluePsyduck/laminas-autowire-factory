@@ -6,8 +6,10 @@ namespace BluePsyduckTest\LaminasAutoWireFactory;
 
 use BluePsyduck\LaminasAutoWireFactory\AutoWireFactory;
 use BluePsyduck\LaminasAutoWireFactory\Exception\FailedReflectionException;
-use BluePsyduck\LaminasAutoWireFactory\Exception\NoParameterMatchException;
-use BluePsyduck\LaminasAutoWireFactory\ParameterAliasResolver;
+use BluePsyduck\LaminasAutoWireFactory\Resolver\AliasResolver;
+use BluePsyduck\LaminasAutoWireFactory\Resolver\ConfigResolver;
+use BluePsyduck\LaminasAutoWireFactory\Resolver\ResolverFactory;
+use BluePsyduck\LaminasAutoWireFactory\Resolver\ResolverInterface;
 use BluePsyduck\TestHelper\ReflectionTrait;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithClassTypeHintConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithoutConstructor;
@@ -16,8 +18,8 @@ use Interop\Container\ContainerInterface;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerExceptionInterface;
 use ReflectionException;
-use stdClass;
 
 /**
  * The PHPUnit test of the AutoWireFactory class.
@@ -30,453 +32,322 @@ class AutoWireFactoryTest extends TestCase
 {
     use ReflectionTrait;
 
-    /** @var ParameterAliasResolver&MockObject */
-    protected ParameterAliasResolver $parameterAliasResolver;
+    // phpcs:ignore
+    private const TEST_CACHE = 'a:1:{s:3:"foo";a:2:{i:0;O:57:"BluePsyduck\LaminasAutoWireFactory\Resolver\AliasResolver":1:{s:1:"a";s:3:"abc";}i:1;O:58:"BluePsyduck\LaminasAutoWireFactory\Resolver\ConfigResolver":1:{s:1:"k";a:2:{i:0;s:3:"def";i:1;s:3:"ghi";}}}}';
 
+    /** @var ResolverFactory&MockObject */
+    private ResolverFactory $resolverFactory;
+
+    /**
+     * @throws ReflectionException
+     */
     protected function setUp(): void
     {
-        $this->parameterAliasResolver = $this->createMock(ParameterAliasResolver::class);
+        $this->resolverFactory = $this->createMock(ResolverFactory::class);
+
+        $this->injectStaticProperty(AutoWireFactory::class, 'cache', []);
+        $this->injectStaticProperty(AutoWireFactory::class, 'cacheFile', null);
+    }
+
+    private function createInstance(): AutoWireFactory
+    {
+        $instance =  new AutoWireFactory();
+
+        try {
+            $this->assertInstanceOf(ResolverFactory::class, $this->extractProperty($instance, 'resolverFactory'));
+            $this->injectProperty($instance, 'resolverFactory', $this->resolverFactory);
+        } catch (ReflectionException $e) {
+            $this->fail($e->getMessage());
+        }
+
+        return $instance;
+    }
+
+    /**
+     * Creates the resolvers to use for the tests.
+     * @param ContainerInterface $container
+     * @param ClassWithoutConstructor $object1
+     * @param ClassWithParameterlessConstructor $object2
+     * @return array<ResolverInterface>
+     */
+    private function createResolvers(
+        ContainerInterface $container,
+        ClassWithoutConstructor $object1,
+        ClassWithParameterlessConstructor $object2
+    ): array {
+        $resolver1 = $this->createMock(ResolverInterface::class);
+        $resolver1->expects($this->once())
+                  ->method('resolve')
+                  ->with($this->identicalTo($container))
+                  ->willReturn($object1);
+
+        $resolver2 = $this->createMock(ResolverInterface::class);
+        $resolver2->expects($this->once())
+                  ->method('resolve')
+                  ->with($this->identicalTo($container))
+                  ->willReturn($object2);
+
+        return [$resolver1, $resolver2];
     }
 
     /**
      * @throws ReflectionException
-     * @runInSeparateProcess // Unable to backup state of ParameterAliasResolver with @backupStaticAttributes
-     * @covers ::setCacheFile
      */
-    public function testSetCacheFile(): void
+    public function testCacheWithoutFile(): void
     {
-        $root = vfsStream::setup('root');
-        $root->addChild(vfsStream::newFile('cache-file'));
-
+        $root = vfsStream::setup();
         $cacheFile = vfsStream::url('root/cache-file');
 
-        $parameterAliasesCache = [
-            'abc' => [
-                'def' => ['ghi', 'jkl'],
-                'mno' => ['pqr', 'stu'],
-            ],
-            'vwx' => [],
+        $cache = [
+            'foo' => [
+                new AliasResolver('abc'),
+                new ConfigResolver(['def', 'ghi']),
+            ]
         ];
-        file_put_contents($cacheFile, sprintf('<?php return %s;', var_export($parameterAliasesCache, true)));
 
         AutoWireFactory::setCacheFile($cacheFile);
+        $this->assertEquals([], $this->extractStaticProperty(AutoWireFactory::class, 'cache'));
+        $this->assertFalse($this->extractStaticProperty(AutoWireFactory::class, 'isCacheDirty'));
 
-        $this->assertEquals(
-            $parameterAliasesCache,
-            $this->extractStaticProperty(ParameterAliasResolver::class, 'parameterAliasesCache')
-        );
+        $this->injectStaticProperty(AutoWireFactory::class, 'cache', $cache);
+        $this->injectStaticProperty(AutoWireFactory::class, 'isCacheDirty', true);
+
+        $instance = new AutoWireFactory();
+        unset($instance);
+
+        $this->assertTrue($root->hasChild('cache-file'));
+        $this->assertFalse($this->extractStaticProperty(AutoWireFactory::class, 'isCacheDirty'));
+        $this->assertEquals(self::TEST_CACHE, file_get_contents($cacheFile));
     }
 
     /**
      * @throws ReflectionException
-     * @covers ::__construct
      */
-    public function testConstruct(): void
+    public function testCacheWithNonDirtyCache(): void
     {
-        $factory = new AutoWireFactory();
+        $root = vfsStream::setup();
+        $cacheFile = vfsStream::url('root/cache-file');
 
-        $this->assertInstanceOf(
-            ParameterAliasResolver::class,
-            $this->extractProperty($factory, 'parameterAliasResolver')
-        );
+        $cache = [
+            'foo' => [
+                new AliasResolver('abc'),
+                new ConfigResolver(['def', 'ghi']),
+            ]
+        ];
+
+        AutoWireFactory::setCacheFile($cacheFile);
+        $this->assertEquals([], $this->extractStaticProperty(AutoWireFactory::class, 'cache'));
+        $this->assertFalse($this->extractStaticProperty(AutoWireFactory::class, 'isCacheDirty'));
+
+        $this->injectStaticProperty(AutoWireFactory::class, 'cache', $cache);
+        $this->injectStaticProperty(AutoWireFactory::class, 'isCacheDirty', false);
+
+        $instance = new AutoWireFactory();
+        unset($instance);
+
+        $this->assertFalse($root->hasChild('cache-file'));
     }
 
     /**
+     * @return array<mixed>
+     */
+    public function provideSetCacheFileWithCacheFile(): array
+    {
+        $cache = [
+            'foo' => [
+                new AliasResolver('abc'),
+                new ConfigResolver(['def', 'ghi']),
+            ],
+        ];
+
+        return [
+            [self::TEST_CACHE, $cache],
+            ['{invalid', []],
+        ];
+    }
+
+    /**
+     * @param string $cacheContents
+     * @param array<class-string, array<ResolverInterface>> $expectedCache
      * @throws ReflectionException
-     * @covers ::__invoke
+     * @dataProvider provideSetCacheFileWithCacheFile
+     */
+    public function testSetCacheFileWithCacheFile(string $cacheContents, array $expectedCache): void
+    {
+        vfsStream::setup();
+        $cacheFile = vfsStream::url('root/cache-file');
+        file_put_contents($cacheFile, $cacheContents);
+
+        AutoWireFactory::setCacheFile($cacheFile);
+        $this->assertEquals($expectedCache, $this->extractStaticProperty(AutoWireFactory::class, 'cache'));
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
      */
     public function testInvoke(): void
     {
-        $requestedName = 'abc';
-        $parameterAliases = [
-            'def' => ['ghi', 'jkl'],
-        ];
-        $parameters = [
-            $this->createMock(stdClass::class),
-            $this->createMock(stdClass::class),
-        ];
-
-        $container = $this->createMock(ContainerInterface::class);
-        $instance = $this->createMock(stdClass::class);
-
-        $this->parameterAliasResolver->expects($this->once())
-                                     ->method('getParameterAliasesForConstructor')
-                                     ->with($this->identicalTo($requestedName))
-                                     ->willReturn($parameterAliases);
-
-        $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->onlyMethods(['createParameterInstances', 'createInstance'])
-                        ->getMock();
-        $factory->expects($this->once())
-                ->method('createParameterInstances')
-                ->with(
-                    $this->identicalTo($container),
-                    $this->identicalTo($requestedName),
-                    $this->identicalTo($parameterAliases)
-                )
-                ->willReturn($parameters);
-        $factory->expects($this->once())
-                ->method('createInstance')
-                ->with($this->identicalTo($requestedName), $this->identicalTo($parameters))
-                ->willReturn($instance);
-        $this->injectProperty($factory, 'parameterAliasResolver', $this->parameterAliasResolver);
-
-        $result = $factory($container, $requestedName);
-
-        $this->assertSame($instance, $result);
-    }
-
-    /**
-     * @throws ReflectionException
-     * @covers ::__invoke
-     */
-    public function testInvokeWithException(): void
-    {
-        $requestedName = 'abc';
-
-        $container = $this->createMock(ContainerInterface::class);
-
-        $this->parameterAliasResolver->expects($this->once())
-                                     ->method('getParameterAliasesForConstructor')
-                                     ->with($this->identicalTo($requestedName))
-                                     ->willThrowException($this->createMock(ReflectionException::class));
-
-        $this->expectException(FailedReflectionException::class);
-
-        $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->onlyMethods(['createParameterInstances', 'createInstance'])
-                        ->getMock();
-        $factory->expects($this->never())
-                ->method('createParameterInstances');
-        $factory->expects($this->never())
-                ->method('createInstance');
-        $this->injectProperty($factory, 'parameterAliasResolver', $this->parameterAliasResolver);
-
-        $factory($container, $requestedName);
-    }
-
-    /**
-     * @throws ReflectionException
-     * @covers ::createParameterInstances
-     */
-    public function testCreateParameterInstances(): void
-    {
-        $className = 'abc';
-        $parameterAliases = [
-            'def' => ['ghi', 'jkl'],
-            'mno' => ['pqr', 'stu'],
-        ];
-
-        $container = $this->createMock(ContainerInterface::class);
-        $instance1 = $this->createMock(stdClass::class);
-        $instance2 = $this->createMock(stdClass::class);
-
-        $expectedResult = [$instance1, $instance2];
-
-        $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->onlyMethods(['createInstanceOfFirstAvailableAlias'])
-                        ->getMock();
-        $factory->expects($this->exactly(2))
-                ->method('createInstanceOfFirstAvailableAlias')
-                ->withConsecutive(
-                    [
-                        $this->identicalTo($container),
-                        $this->identicalTo($className),
-                        $this->identicalTo('def'),
-                        $this->identicalTo(['ghi', 'jkl'])
-                    ],
-                    [
-                        $this->identicalTo($container),
-                        $this->identicalTo($className),
-                        $this->identicalTo('mno'),
-                        $this->identicalTo(['pqr', 'stu'])
-                    ]
-                )
-                ->willReturnOnConsecutiveCalls(
-                    $instance1,
-                    $instance2
-                );
-
-        $result = $this->invokeMethod($factory, 'createParameterInstances', $container, $className, $parameterAliases);
-
-        $this->assertSame($expectedResult, $result);
-    }
-
-    /**
-     * @throws ReflectionException
-     * @covers ::createInstanceOfFirstAvailableAlias
-     */
-    public function testCreateInstanceOfFirstAvailableAlias(): void
-    {
-        $className = 'abc';
-        $parameterName = 'def';
-        $aliases = ['ghi', 'jkl', 'mno'];
-
-        $instance = $this->createMock(stdClass::class);
-
-        $container = $this->createMock(ContainerInterface::class);
-        $container->expects($this->exactly(2))
-                  ->method('has')
-                  ->withConsecutive(
-                      [$this->identicalTo('ghi')],
-                      [$this->identicalTo('jkl')]
-                  )
-                  ->willReturnOnConsecutiveCalls(
-                      false,
-                      true
-                  );
-        $container->expects($this->once())
-                  ->method('get')
-                  ->with($this->identicalTo('jkl'))
-                  ->willReturn($instance);
-
-        $factory = new AutoWireFactory();
-        $result = $this->invokeMethod(
-            $factory,
-            'createInstanceOfFirstAvailableAlias',
-            $container,
-            $className,
-            $parameterName,
-            $aliases
-        );
-
-        $this->assertEquals($instance, $result);
-    }
-
-    /**
-     * @throws ReflectionException
-     * @covers ::createInstanceOfFirstAvailableAlias
-     */
-    public function testCreateInstanceOfFirstAvailableAliasWithoutMatch(): void
-    {
-        $className = 'abc';
-        $parameterName = 'def';
-        $aliases = ['ghi'];
-
-        $instance = $this->createMock(stdClass::class);
-
-        $container = $this->createMock(ContainerInterface::class);
-        $container->expects($this->once())
-                  ->method('has')
-                  ->with($this->identicalTo('ghi'))
-                  ->willReturn(false);
-        $container->expects($this->never())
-                  ->method('get');
-
-        $this->expectException(NoParameterMatchException::class);
-
-        $factory = new AutoWireFactory();
-        $result = $this->invokeMethod(
-            $factory,
-            'createInstanceOfFirstAvailableAlias',
-            $container,
-            $className,
-            $parameterName,
-            $aliases
-        );
-
-        $this->assertEquals($instance, $result);
-    }
-
-    /**
-     * @throws ReflectionException
-     * @covers ::createInstance
-     */
-    public function testCreateInstance(): void
-    {
-        $foo = $this->createMock(ClassWithoutConstructor::class);
-        $bar = $this->createMock(ClassWithParameterlessConstructor::class);
-
         $className = ClassWithClassTypeHintConstructor::class;
-        $parameters = [$foo, $bar];
-        $expectedResult = new ClassWithClassTypeHintConstructor($foo, $bar);
+        $container = $this->createMock(ContainerInterface::class);
+        $object1 = $this->createMock(ClassWithoutConstructor::class);
+        $object2 = $this->createMock(ClassWithParameterlessConstructor::class);
+        $expectedResult = new ClassWithClassTypeHintConstructor($object1, $object2);
 
-        $factory = new AutoWireFactory();
-        $result = $this->invokeMethod($factory, 'createInstance', $className, $parameters);
+        $this->resolverFactory->expects($this->once())
+                              ->method('createResolversForClass')
+                              ->with($this->identicalTo($className))
+                              ->willReturn($this->createResolvers($container, $object1, $object2));
 
+        $instance = $this->createInstance();
+
+        $result = $instance($container, $className);
         $this->assertEquals($expectedResult, $result);
     }
 
     /**
-     * @throws ReflectionException
-     * @covers ::canCreate
+     * @throws ContainerExceptionInterface|ReflectionException
      */
+    public function testInvokeUsingCache(): void
+    {
+        $className = ClassWithClassTypeHintConstructor::class;
+        $container = $this->createMock(ContainerInterface::class);
+        $object1 = $this->createMock(ClassWithoutConstructor::class);
+        $object2 = $this->createMock(ClassWithParameterlessConstructor::class);
+        $expectedResult = new ClassWithClassTypeHintConstructor($object1, $object2);
+
+        $cache = [
+            $className => $this->createResolvers($container, $object1, $object2),
+        ];
+        $this->injectStaticProperty(AutoWireFactory::class, 'cache', $cache);
+
+        $this->resolverFactory->expects($this->never())
+                              ->method('createResolversForClass');
+
+        $instance = $this->createInstance();
+
+        $result = $instance($container, $className);
+        $this->assertEquals($expectedResult, $result);
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     */
+    public function testInvokeWithReflectionException(): void
+    {
+        $className = ClassWithClassTypeHintConstructor::class;
+        $container = $this->createMock(ContainerInterface::class);
+
+        $this->resolverFactory->expects($this->once())
+                              ->method('createResolversForClass')
+                              ->with($this->identicalTo($className))
+                              ->willThrowException($this->createMock(ReflectionException::class));
+
+        $this->expectException(FailedReflectionException::class);
+
+        $instance = $this->createInstance();
+        $instance($container, $className);
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     */
+    public function testInvokeWithNonExistingClass(): void
+    {
+        $className = 'abc';
+        $container = $this->createMock(ContainerInterface::class);
+
+        $this->resolverFactory->expects($this->never())
+                              ->method('createResolversForClass');
+
+        $this->expectException(FailedReflectionException::class);
+
+        $instance = $this->createInstance();
+        $instance($container, $className);
+    }
+
     public function testCanCreate(): void
     {
-        $requestedName = __CLASS__;
-        $parameterAliases = [
-            'abc' => ['def', 'ghi'],
-        ];
+        $className = ClassWithClassTypeHintConstructor::class;
         $container = $this->createMock(ContainerInterface::class);
 
-        $this->parameterAliasResolver->expects($this->once())
-                                     ->method('getParameterAliasesForConstructor')
-                                     ->with($this->identicalTo($requestedName))
-                                     ->willReturn($parameterAliases);
+        $resolver1 = $this->createMock(ResolverInterface::class);
+        $resolver1->expects($this->once())
+                  ->method('canResolve')
+                  ->with($this->identicalTo($container))
+                  ->willReturn(true);
 
-        $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->onlyMethods(['canAutoWire'])
-                        ->getMock();
-        $factory->expects($this->once())
-                ->method('canAutoWire')
-                ->with($this->identicalTo($container), $this->identicalTo($parameterAliases))
-                ->willReturn(true);
-        $this->injectProperty($factory, 'parameterAliasResolver', $this->parameterAliasResolver);
+        $resolver2 = $this->createMock(ResolverInterface::class);
+        $resolver2->expects($this->once())
+                  ->method('canResolve')
+                  ->with($this->identicalTo($container))
+                  ->willReturn(true);
 
-        $result = $factory->canCreate($container, $requestedName);
+        $this->resolverFactory->expects($this->once())
+                              ->method('createResolversForClass')
+                              ->with($this->identicalTo($className))
+                              ->willReturn([$resolver1, $resolver2]);
 
+        $instance = $this->createInstance();
+
+        $result = $instance->canCreate($container, $className);
         $this->assertTrue($result);
     }
 
-    /**
-     * @throws ReflectionException
-     * @covers ::canCreate
-     */
-    public function testCanCreateWithException(): void
+    public function testCanCreateReturningFalse(): void
     {
-        $requestedName = __CLASS__;
+        $className = ClassWithClassTypeHintConstructor::class;
         $container = $this->createMock(ContainerInterface::class);
 
-        $this->parameterAliasResolver->expects($this->once())
-                                     ->method('getParameterAliasesForConstructor')
-                                     ->with($this->identicalTo($requestedName))
-                                     ->willThrowException($this->createMock(ReflectionException::class));
+        $resolver1 = $this->createMock(ResolverInterface::class);
+        $resolver1->expects($this->once())
+                  ->method('canResolve')
+                  ->with($this->identicalTo($container))
+                  ->willReturn(true);
 
-        $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->onlyMethods(['canAutoWire'])
-                        ->getMock();
-        $factory->expects($this->never())
-                ->method('canAutoWire');
-        $this->injectProperty($factory, 'parameterAliasResolver', $this->parameterAliasResolver);
-
-        $result = $factory->canCreate($container, $requestedName);
-
-        $this->assertFalse($result);
-    }
-
-    /**
-     * @throws ReflectionException
-     * @covers ::canCreate
-     */
-    public function testCanCreateWithoutClass(): void
-    {
-        $requestedName = 'array';
-        $container = $this->createMock(ContainerInterface::class);
-
-        $this->parameterAliasResolver->expects($this->never())
-                                     ->method('getParameterAliasesForConstructor');
-
-        $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->onlyMethods(['canAutoWire'])
-                        ->getMock();
-        $factory->expects($this->never())
-                ->method('canAutoWire');
-        $this->injectProperty($factory, 'parameterAliasResolver', $this->parameterAliasResolver);
-
-        $result = $factory->canCreate($container, $requestedName);
-
-        $this->assertFalse($result);
-    }
-
-    /**
-     * @throws ReflectionException
-     * @covers ::canAutoWire
-     */
-    public function testCanAutoWire(): void
-    {
-        $parameterAliases = [
-            'abc' => ['def', 'ghi'],
-            'jkl' => ['mno', 'pqr'],
-        ];
-        $container = $this->createMock(ContainerInterface::class);
-
-        $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->onlyMethods(['hasAnyAlias'])
-                        ->getMock();
-        $factory->expects($this->exactly(2))
-                ->method('hasAnyAlias')
-                ->withConsecutive(
-                    [$this->identicalTo($container), $this->identicalTo(['def', 'ghi'])],
-                    [$this->identicalTo($container), $this->identicalTo(['mno', 'pqr'])]
-                )
-                ->willReturnOnConsecutiveCalls(
-                    true,
-                    true
-                );
-
-        $result = $this->invokeMethod($factory, 'canAutoWire', $container, $parameterAliases);
-
-        $this->assertTrue($result);
-    }
-
-    /**
-     * @throws ReflectionException
-     * @covers ::canAutoWire
-     */
-    public function testCanAutoWireWithoutHavingAliases(): void
-    {
-        $parameterAliases = [
-            'abc' => ['def', 'ghi'],
-            'jkl' => ['mno', 'pqr'],
-        ];
-        $container = $this->createMock(ContainerInterface::class);
-
-        $factory = $this->getMockBuilder(AutoWireFactory::class)
-                        ->onlyMethods(['hasAnyAlias'])
-                        ->getMock();
-        $factory->expects($this->once())
-                ->method('hasAnyAlias')
-                ->with($this->identicalTo($container), $this->identicalTo(['def', 'ghi']))
-                ->willReturn(false);
-
-        $result = $this->invokeMethod($factory, 'canAutoWire', $container, $parameterAliases);
-
-        $this->assertFalse($result);
-    }
-
-    /**
-     * @throws ReflectionException
-     * @covers ::hasAnyAlias
-     */
-    public function testHasAnyAliasWithMatch(): void
-    {
-        $aliases = ['abc', 'def', 'ghi'];
-
-        $container = $this->createMock(ContainerInterface::class);
-        $container->expects($this->exactly(2))
-                  ->method('has')
-                  ->withConsecutive(
-                      [$this->identicalTo('abc')],
-                      [$this->identicalTo('def')]
-                  )
-                  ->willReturnOnConsecutiveCalls(
-                      false,
-                      true
-                  );
-
-        $factory = new AutoWireFactory();
-        $result = $this->invokeMethod($factory, 'hasAnyAlias', $container, $aliases);
-
-        $this->assertTrue($result);
-    }
-
-    /**
-     * @throws ReflectionException
-     * @covers ::hasAnyAlias
-     */
-    public function testHasAnyAliasWithoutMatch(): void
-    {
-        $aliases = ['abc'];
-
-        $container = $this->createMock(ContainerInterface::class);
-        $container->expects($this->once())
-                  ->method('has')
-                  ->with($this->identicalTo('abc'))
+        $resolver2 = $this->createMock(ResolverInterface::class);
+        $resolver2->expects($this->once())
+                  ->method('canResolve')
+                  ->with($this->identicalTo($container))
                   ->willReturn(false);
 
-        $factory = new AutoWireFactory();
-        $result = $this->invokeMethod($factory, 'hasAnyAlias', $container, $aliases);
+        $this->resolverFactory->expects($this->once())
+                              ->method('createResolversForClass')
+                              ->with($this->identicalTo($className))
+                              ->willReturn([$resolver1, $resolver2]);
 
+        $instance = $this->createInstance();
+
+        $result = $instance->canCreate($container, $className);
+        $this->assertFalse($result);
+    }
+
+    public function testCanCreateWithReflectionException(): void
+    {
+        $className = ClassWithClassTypeHintConstructor::class;
+        $container = $this->createMock(ContainerInterface::class);
+
+        $this->resolverFactory->expects($this->once())
+                              ->method('createResolversForClass')
+                              ->with($this->identicalTo($className))
+                              ->willThrowException($this->createMock(ReflectionException::class));
+
+        $instance = $this->createInstance();
+
+        $result = $instance->canCreate($container, $className);
+        $this->assertFalse($result);
+    }
+
+    public function testCanCreateWithNonExistingClass(): void
+    {
+        $className = 'abc';
+        $container = $this->createMock(ContainerInterface::class);
+
+        $this->resolverFactory->expects($this->never())
+                              ->method('createResolversForClass');
+
+        $instance = $this->createInstance();
+
+        $result = $instance->canCreate($container, $className);
         $this->assertFalse($result);
     }
 }

@@ -12,5 +12,4 @@ namespace BluePsyduckTestAsset\LaminasAutoWireFactory;
  */
 class ClassWithoutConstructor
 {
-
 }

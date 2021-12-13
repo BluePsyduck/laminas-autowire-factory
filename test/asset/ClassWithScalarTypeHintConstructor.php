@@ -12,12 +12,10 @@ namespace BluePsyduckTestAsset\LaminasAutoWireFactory;
  */
 class ClassWithScalarTypeHintConstructor
 {
-    public $property;
-    public $instances;
-
-    public function __construct(string $property, array $instances)
-    {
-        $this->property = $property;
-        $this->instances = $instances;
+    public function __construct(
+        public string $property,
+        /** @var array<mixed> */
+        public array $instances,
+    ) {
     }
 }

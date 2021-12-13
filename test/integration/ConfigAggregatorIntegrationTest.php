@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BluePsyduckIntegrationTest\LaminasAutoWireFactory;
 
 use BluePsyduck\LaminasAutoWireFactory\AutoWireFactory;
+use BluePsyduck\LaminasAutoWireFactory\AutoWireUtils;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithoutConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithParameterlessConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithScalarTypeHintConstructor;
@@ -13,22 +14,17 @@ use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase;
 
-use function BluePsyduck\LaminasAutoWireFactory\injectAliasArray;
-use function BluePsyduck\LaminasAutoWireFactory\readConfig;
-
 /**
  * The integration test for the ConfigAggregator.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
+ *
+ * @coversNothing
  */
 class ConfigAggregatorIntegrationTest extends TestCase
 {
-    /**
-     * Returns a test config as a config provider.
-     * @return callable
-     */
-    protected function getConfigProvider(): callable
+    private function getConfigProvider(): callable
     {
         return function (): array {
             return [
@@ -39,8 +35,8 @@ class ConfigAggregatorIntegrationTest extends TestCase
                         ClassWithParameterlessConstructor::class => AutoWireFactory::class,
                         ClassWithScalarTypeHintConstructor::class => AutoWireFactory::class,
 
-                        'string $property' => readConfig('foo', 'bar'),
-                        'array $instances' => injectAliasArray('foo', 'baz'),
+                        'string $property' => AutoWireUtils::readConfig('foo', 'bar'),
+                        'array $instances' => AutoWireUtils::injectAliasArray('foo', 'baz'),
                     ],
                 ],
                 'foo' => [
@@ -55,7 +51,6 @@ class ConfigAggregatorIntegrationTest extends TestCase
     }
 
     /**
-     * Creates the service manager with the config.
      * @param array<mixed> $config
      * @return ServiceManager
      */
@@ -63,15 +58,13 @@ class ConfigAggregatorIntegrationTest extends TestCase
     {
         $result = new ServiceManager();
 
+        // @phpstan-ignore-next-line
         (new Config($config['dependencies'] ?? []))->configureServiceManager($result);
         $result->setService('config', $config);
 
         return $result;
     }
 
-    /**
-     * Tests the caching of the ConfigAggregator.
-     */
     public function testCaching(): void
     {
         $expectedInstance = new ClassWithScalarTypeHintConstructor(
