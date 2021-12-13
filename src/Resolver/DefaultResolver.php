@@ -55,4 +55,20 @@ class DefaultResolver implements ResolverInterface, ParameterAwareInterface
 
         return false;
     }
+
+    /**
+     * @return array{a:array<string>}
+     */
+    public function __serialize(): array
+    {
+        return ['a' => $this->aliases];
+    }
+
+    /**
+     * @param array{a?:array<string>} $data
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->aliases = $data['a'] ?? [];
+    }
 }

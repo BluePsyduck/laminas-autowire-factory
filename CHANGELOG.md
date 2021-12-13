@@ -22,7 +22,7 @@
 
 ### Removed
 
-- **[BC Break]: Removed support for PHP 7.4. The minimal required version is now PHP 8.0.
+- Support for PHP 7.4. The minimal required version is now PHP 8.0.
 
 ## 1.1.1 - 2021-02-07
 

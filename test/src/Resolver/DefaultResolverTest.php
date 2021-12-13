@@ -215,4 +215,29 @@ class DefaultResolverTest extends TestCase
         $result = $instance->canResolve($container);
         $this->assertFalse($result);
     }
+
+    public function testSerialize(): void
+    {
+        $type = $this->createMock(ReflectionNamedType::class);
+        $type->expects($this->any())
+             ->method('getName')
+             ->willReturn('abc');
+        $type->expects($this->any())
+             ->method('isBuiltin')
+             ->willReturn(false);
+
+        $parameter = $this->createMock(ReflectionParameter::class);
+        $parameter->expects($this->any())
+                  ->method('getName')
+                  ->willReturn('def');
+        $parameter->expects($this->any())
+                  ->method('getType')
+                  ->willReturn($type);
+
+        $instance = new DefaultResolver();
+        $instance->setParameter($parameter);
+
+        $result = unserialize(serialize($instance));
+        $this->assertEquals($instance, $result);
+    }
 }
