@@ -43,6 +43,7 @@ class AutoWireFactory implements FactoryInterface, AbstractFactoryInterface
         if (file_exists($cacheFile)) {
             $contents = @file_get_contents($cacheFile);
             if ($contents !== false) {
+                /** @noinspection UnserializeExploitsInspection */
                 $data = @unserialize($contents);
                 if (is_array($data)) {
                     /** @var array<class-string, array<ResolverInterface>> $data */
@@ -80,7 +81,7 @@ class AutoWireFactory implements FactoryInterface, AbstractFactoryInterface
             throw new FailedReflectionException($requestedName, $e);
         }
 
-        $values = array_map(fn (ResolverInterface $resolver) => $resolver->resolve($container), $resolvers);
+        $values = array_map(static fn (ResolverInterface $resolver) => $resolver->resolve($container), $resolvers);
         return new $requestedName(...$values);
     }
 

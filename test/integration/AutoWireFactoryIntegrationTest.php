@@ -7,6 +7,7 @@ namespace BluePsyduckIntegrationTest\LaminasAutoWireFactory;
 use BluePsyduck\LaminasAutoWireFactory\AutoWireFactory;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithAttributes;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithClassTypeHintConstructor;
+use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithDefaultValuesConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithoutConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithParameterlessConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithScalarTypeHintConstructor;
@@ -37,6 +38,7 @@ class AutoWireFactoryIntegrationTest extends TestCase
             [ClassWithClassTypeHintConstructor::class],
             [ClassWithScalarTypeHintConstructor::class],
             [ClassWithAttributes::class],
+            [ClassWithDefaultValuesConstructor::class],
         ];
     }
 
@@ -64,6 +66,7 @@ class AutoWireFactoryIntegrationTest extends TestCase
                 ClassWithParameterlessConstructor::class => AutoWireFactory::class,
                 ClassWithScalarTypeHintConstructor::class => AutoWireFactory::class,
                 ClassWithAttributes::class => AutoWireFactory::class,
+                ClassWithDefaultValuesConstructor::class => AutoWireFactory::class,
             ],
         ]);
 
