@@ -8,11 +8,11 @@ use BluePsyduck\LaminasAutoWireFactory\AutoWireUtils;
 use BluePsyduck\LaminasAutoWireFactory\Exception\MissingConfigException;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithoutConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithParameterlessConstructor;
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * The integration test of the AliasArrayInjectorFactory class.

@@ -6,10 +6,10 @@ namespace BluePsyduckIntegrationTest\LaminasAutoWireFactory;
 
 use BluePsyduck\LaminasAutoWireFactory\AutoWireUtils;
 use BluePsyduck\LaminasAutoWireFactory\Exception\MissingConfigException;
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * The integration test of the ConfigReaderFactory class.
