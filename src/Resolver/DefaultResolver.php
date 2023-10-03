@@ -28,7 +28,7 @@ class DefaultResolver implements ResolverInterface, ParameterAwareInterface
         if ($type instanceof ReflectionNamedType) {
             $this->aliases[] = "{$type->getName()} \${$parameter->getName()}";
             if (!$type->isBuiltin()) {
-                $this->aliases[] = "{$type->getName()}";
+                $this->aliases[] = $type->getName();
             }
         }
         $this->aliases[] = "\${$parameter->getName()}";

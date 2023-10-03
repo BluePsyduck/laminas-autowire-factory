@@ -38,14 +38,17 @@ class ResolverFactory
      * Creates the resolver for the specified parameter.
      * @param ReflectionParameter $parameter
      * @return ResolverInterface
+     * @throws ReflectionException
      */
     public function createResolverForParameter(ReflectionParameter $parameter): ResolverInterface
     {
         $attributes = $parameter->getAttributes(ResolverAttribute::class, ReflectionAttribute::IS_INSTANCEOF);
         if (count($attributes) > 0) {
-            /* @var ResolverAttribute $attribute*/
+            /* @var ResolverAttribute $attribute */
             $attribute = $attributes[0]->newInstance();
             $resolver = $attribute->createResolver();
+        } elseif ($parameter->isDefaultValueAvailable()) {
+            $resolver = new DefaultValueResolver();
         } else {
             $resolver = new DefaultResolver();
         }
