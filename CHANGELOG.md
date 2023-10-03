@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.0 - 2023-10-03
+
+### Added
+
+- Support for using the default values of parameters in the constructors (thanks to @ricwein).
+
 ## 2.0.0 - 2021-12-13
 
 - Re-implemented the library to allow using attributes to resolve parameters of the service classes.
