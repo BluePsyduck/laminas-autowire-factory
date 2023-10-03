@@ -6,6 +6,7 @@ namespace BluePsyduckTest\LaminasAutoWireFactory\Resolver;
 
 use BluePsyduck\LaminasAutoWireFactory\Attribute\ResolverAttribute;
 use BluePsyduck\LaminasAutoWireFactory\Resolver\DefaultResolver;
+use BluePsyduck\LaminasAutoWireFactory\Resolver\DefaultValueResolver;
 use BluePsyduck\LaminasAutoWireFactory\Resolver\ResolverFactory;
 use BluePsyduck\LaminasAutoWireFactory\Resolver\ResolverInterface;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithClassTypeHintConstructor;
@@ -102,10 +103,29 @@ class ResolverFactoryTest extends TestCase
         $parameter->expects($this->once())
                   ->method('getAttributes')
                   ->willReturn([]);
+        $parameter->expects($this->once())
+                  ->method('isDefaultValueAvailable')
+                  ->willReturn(false);
 
         $instance = new ResolverFactory();
         $result = $instance->createResolverForParameter($parameter);
 
         $this->assertInstanceOf(DefaultResolver::class, $result);
+    }
+
+    public function testCreateResolverForParameterWithDefaultValue(): void
+    {
+        $parameter = $this->createMock(ReflectionParameter::class);
+        $parameter->expects($this->once())
+                  ->method('getAttributes')
+                  ->willReturn([]);
+        $parameter->expects($this->atLeastOnce())
+                  ->method('isDefaultValueAvailable')
+                  ->willReturn(true);
+
+        $instance = new ResolverFactory();
+        $result = $instance->createResolverForParameter($parameter);
+
+        $this->assertInstanceOf(DefaultValueResolver::class, $result);
     }
 }
