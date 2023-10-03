@@ -28,6 +28,12 @@ of handling auto wiring, especially [dealing with multiple implementations of th
 
 The following cases can be handled by the default strategy:
 
+#### Parameter with default values
+
+Example: ```__construct(string $fancyParameter = 'fancy-value')```
+
+If the parameter has a default value, that value will be used, skipping all other resolving steps.
+
 #### Parameter with class type-hint
 
 Example: ```__construct(FancyClass $fancy)```
