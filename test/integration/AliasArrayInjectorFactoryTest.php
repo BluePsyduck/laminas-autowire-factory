@@ -8,7 +8,6 @@ use BluePsyduck\LaminasAutoWireFactory\AutoWireUtils;
 use BluePsyduck\LaminasAutoWireFactory\Exception\MissingConfigException;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithoutConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithParameterlessConstructor;
-use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
@@ -44,7 +43,7 @@ class AliasArrayInjectorFactoryTest extends TestCase
 
         $container = new ServiceManager();
         $container->setService('config', $config);
-        (new Config($dependencies))->configureServiceManager($container);
+        $container->configure($dependencies);
 
         return $container;
     }

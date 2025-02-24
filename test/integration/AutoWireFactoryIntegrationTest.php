@@ -11,7 +11,6 @@ use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithDefaultValuesConstructo
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithoutConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithParameterlessConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithScalarTypeHintConstructor;
-use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
@@ -45,7 +44,7 @@ class AutoWireFactoryIntegrationTest extends TestCase
     private function createContainerWithExplicitFactories(): ContainerInterface
     {
         // @phpstan-ignore-next-line
-        $config = new Config([
+        $config = [
             'services' => [
                 'string $property' => 'abc',
                 'array $instances' => ['def', 'ghi'],
@@ -68,12 +67,9 @@ class AutoWireFactoryIntegrationTest extends TestCase
                 ClassWithAttributes::class => AutoWireFactory::class,
                 ClassWithDefaultValuesConstructor::class => AutoWireFactory::class,
             ],
-        ]);
+        ];
 
-        $container = new ServiceManager();
-        $config->configureServiceManager($container);
-
-        return $container;
+        return new ServiceManager($config);
     }
 
     /**
@@ -92,7 +88,7 @@ class AutoWireFactoryIntegrationTest extends TestCase
     protected function createContainerWithAbstractFactory(): ContainerInterface
     {
         // @phpstan-ignore-next-line
-        $config = new Config([
+        $config = [
             'services' => [
                 'string $property' => 'abc',
                 'array $instances' => ['def', 'ghi'],
@@ -110,12 +106,9 @@ class AutoWireFactoryIntegrationTest extends TestCase
             'abstract_factories' => [
                 AutoWireFactory::class,
             ],
-        ]);
+        ];
 
-        $container = new ServiceManager();
-        $config->configureServiceManager($container);
-
-        return $container;
+        return new ServiceManager($config);
     }
 
     /**

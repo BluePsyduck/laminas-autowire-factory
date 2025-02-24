@@ -7,10 +7,10 @@ namespace BluePsyduck\LaminasAutoWireFactory;
 use BluePsyduck\LaminasAutoWireFactory\Exception\FailedReflectionException;
 use BluePsyduck\LaminasAutoWireFactory\Resolver\ResolverFactory;
 use BluePsyduck\LaminasAutoWireFactory\Resolver\ResolverInterface;
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use ReflectionException;
 
 /**
@@ -35,7 +35,6 @@ class AutoWireFactory implements FactoryInterface, AbstractFactoryInterface
 
     /**
      * Sets the cache file to use.
-     * @param string $cacheFile
      */
     public static function setCacheFile(string $cacheFile): void
     {
@@ -63,13 +62,11 @@ class AutoWireFactory implements FactoryInterface, AbstractFactoryInterface
     }
 
     /**
-     * @param ContainerInterface $container
      * @param string $requestedName
      * @param array<mixed>|null $options
-     * @return object
      * @throws ContainerExceptionInterface
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): object
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): object
     {
         if (!class_exists($requestedName)) {
             throw new FailedReflectionException($requestedName);
@@ -87,9 +84,7 @@ class AutoWireFactory implements FactoryInterface, AbstractFactoryInterface
 
     /**
      * Returns whether the requested name can be auto-wired by this factory.
-     * @param ContainerInterface $container
      * @param string $requestedName
-     * @return bool
      */
     public function canCreate(ContainerInterface $container, $requestedName): bool
     {

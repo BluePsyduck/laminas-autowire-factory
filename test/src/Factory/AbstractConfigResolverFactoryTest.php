@@ -8,9 +8,9 @@ use BluePsyduck\LaminasAutoWireFactory\Factory\AbstractConfigResolverFactory;
 use BluePsyduck\LaminasAutoWireFactory\Factory\AliasArrayInjectorFactory;
 use BluePsyduck\LaminasAutoWireFactory\Factory\ConfigReaderFactory;
 use BluePsyduck\LaminasAutoWireFactory\Resolver\ResolverInterface;
-use Interop\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use stdClass;
 
 /**

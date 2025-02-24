@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace BluePsyduck\LaminasAutoWireFactory\Factory;
 
 use BluePsyduck\LaminasAutoWireFactory\Resolver\ResolverInterface;
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * The abstract class for factories using a config resolver.

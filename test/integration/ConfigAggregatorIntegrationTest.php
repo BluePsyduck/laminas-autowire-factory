@@ -10,7 +10,6 @@ use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithoutConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithParameterlessConstructor;
 use BluePsyduckTestAsset\LaminasAutoWireFactory\ClassWithScalarTypeHintConstructor;
 use Laminas\ConfigAggregator\ConfigAggregator;
-use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase;
 
@@ -59,7 +58,7 @@ class ConfigAggregatorIntegrationTest extends TestCase
         $result = new ServiceManager();
 
         // @phpstan-ignore-next-line
-        (new Config($config['dependencies'] ?? []))->configureServiceManager($result);
+        $result->configure($config['dependencies'] ?? []);
         $result->setService('config', $config);
 
         return $result;
