@@ -69,7 +69,7 @@ class AutoWireFactory implements FactoryInterface, AbstractFactoryInterface
      * @return object
      * @throws ContainerExceptionInterface
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): object
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): object
     {
         if (!class_exists($requestedName)) {
             throw new FailedReflectionException($requestedName);
